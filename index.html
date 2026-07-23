@@ -937,13 +937,17 @@
 <ol>
 <li>این آزمون فقط در نسخه دسکتاپ مرورگر <b>Google Chrome</b> باز می‌شود.</li>
 <li>پس از فشردن دکمه شروع، شمارش معکوس دو ساعته آغاز می‌شود و با Refresh یا بستن و بازکردن صفحه از ابتدا شروع نخواهد شد.</li>
-<li>در طول آزمون پاسخ‌ها به‌صورت خودکار در همین مرورگر ذخیره می‌شوند.</li>
+<li>
+در سؤال BVP سه سری اول، روش عددی FDM است و حل دستگاه ماتریسی باید با
+یکی از روش‌های Gaussian elimination، Gauss–Jordan یا Gauss–Seidel
+که توسط دانشجو کدنویسی شده انجام شود.
+</li><li>در طول آزمون پاسخ‌ها به‌صورت خودکار در همین مرورگر ذخیره می‌شوند.</li>
 <li>آزمون هنگام شروع وارد حالت تمام‌صفحه می‌شود. تغییر تب و خروج از تمام‌صفحه فقط در گزارش آزمون ثبت می‌شود و باعث قفل خودکار نخواهد شد.</li>
 <li>تنها پاسخ قابل ارزیابی، کد MATLAB نوشته‌شده در دو ویرایشگر است. بخش پاسخ دست‌نویس صرفاً راهنمای کامل حل ریاضی است.</li>
 <li>استفاده از هوش مصنوعی، موتور جست‌وجو، پیام‌رسان، کپی‌کردن کد یا دریافت کمک از دیگران مجاز نیست.</li>
 <li>پس از پایان دستی آزمون یا اتمام زمان، محدودیت تمام‌صفحه برداشته و پنجره چاپ Chrome به‌طور خودکار باز می‌شود.</li>
 <li>در پنجره چاپ، گزینه <b>Save as PDF</b> را انتخاب کنید. نام پیشنهادی فایل به‌صورت <b>Fullname-StudentID.pdf</b> تنظیم می‌شود.</li>
-<li>فایل PDF پاسخ را در سریع‌ترین زمان ممکن در Google Form معرفی‌شده توسط دستیار آموزشی بارگذاری کنید. تا پایان بارگذاری، صفحه آزمون را نبندید.</li>
+<li>فایل PDF پاسخ را در سریع‌ترین زمان ممکن در Google Form معرفی‌شده توسط استاد بارگذاری کنید. تا پایان بارگذاری، صفحه آزمون را نبندید.</li>
 </ol>
 </div>
 <div class="notice availability-notice" id="availabilityNotice">در حال بررسی زمان مجاز آزمون براساس ساعت تهران...</div><div class="notice notice-success">مجموعه سؤال هنگام فشردن دکمه شروع و براساس ساعت تهران تعیین می‌شود و تا پایان همان تلاش، حتی پس از Refresh، تغییر نمی‌کند.</div><div class="form-grid">
@@ -1291,44 +1295,24 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 استفاده از <span dir="ltr">A\b</span>، <span dir="ltr">inv</span> و
 <span dir="ltr">linsolve</span> مجاز نیست.
 </p></div><div class="fixed-constants no-select"><strong>داده‌های ثابت این سری</strong><div class="equation" data-tex="$$L=0.005,\quad D_e=1.2\times10^{-9},\quad k_r=2.0\times10^{-4},\quad k_g=2.5\times10^{-5},\quad C_b=2$$">$$L=0.005,\quad D_e=1.2\times10^{-9},\quad k_r=2.0\times10^{-4},\quad k_g=2.5\times10^{-5},\quad C_b=2$$</div></div><details class="solution no-select" open=""><summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary><div class="solution-body"><div class="solution-step"><h4>۱) معادله گره‌های داخلی</h4><div class="equation" data-tex="$$\lambda^2=\frac{k_r}{D_e}$$">$$\lambda^2=\frac{k_r}{D_e}$$</div><div class="equation" data-tex="$$\frac{C_{i-1}-2C_i+C_{i+1}}{h^2}-\lambda^2C_i=0$$">$$\frac{C_{i-1}-2C_i+C_{i+1}}{h^2}-\lambda^2C_i=0$$</div><div class="equation" data-tex="$$-C_{i-1}+\left(2+\lambda^2h^2\right)C_i-C_{i+1}=0$$">$$-C_{i-1}+\left(2+\lambda^2h^2\right)C_i-C_{i+1}=0$$</div></div><div class="solution-step"><h4>۲) اعمال شرط تقارن با گره مجازی</h4><div class="equation" data-tex="$$C'(0)\approx\frac{C_1-C_{-1}}{2h}=0$$">$$C'(0)\approx\frac{C_1-C_{-1}}{2h}=0$$</div><div class="equation" data-tex="$$C_{-1}=C_1$$">$$C_{-1}=C_1$$</div><div class="equation" data-tex="$$\frac{C_{-1}-2C_0+C_1}{h^2}-\lambda^2C_0=0$$">$$\frac{C_{-1}-2C_0+C_1}{h^2}-\lambda^2C_0=0$$</div><div class="equation" data-tex="$$\left(2+\lambda^2h^2\right)C_0-2C_1=0$$">$$\left(2+\lambda^2h^2\right)C_0-2C_1=0$$</div></div><div class="solution-step"><h4>۳) شرط فیلم در سطح خارجی</h4><div class="equation" data-tex="$$C'(L)\approx\frac{C_N-C_{N-1}}{h}$$">$$C'(L)\approx\frac{C_N-C_{N-1}}{h}$$</div><div class="equation" data-tex="$$D_e\frac{C_N-C_{N-1}}{h}=k_g(C_b-C_N)$$">$$D_e\frac{C_N-C_{N-1}}{h}=k_g(C_b-C_N)$$</div><div class="equation" data-tex="$$-\frac{D_e}{h}C_{N-1}+\left(\frac{D_e}{h}+k_g\right)C_N=k_gC_b$$">$$-\frac{D_e}{h}C_{N-1}+\left(\frac{D_e}{h}+k_g\right)C_N=k_gC_b$$</div></div><div class="solution-step"><h4>۴) بردار مجهولات و شار خارجی</h4><div class="equation" data-tex="$$\mathbf{C}=\begin{bmatrix}C_0&amp;C_1&amp;\cdots&amp;C_N\end{bmatrix}^{T}$$">$$\mathbf{C}=\begin{bmatrix}C_0&amp;C_1&amp;\cdots&amp;C_N\end{bmatrix}^{T}$$</div><div class="equation" data-tex="$$\mathbf{A}\mathbf{C}=\mathbf{b}$$">$$\mathbf{A}\mathbf{C}=\mathbf{b}$$</div><div class="equation" data-tex="$$N_A=-D_e\left.\frac{dC}{dx}\right|_{x=L}\approx-D_e\frac{C_N-C_{N-1}}{h}$$">$$N_A=-D_e\left.\frac{dC}{dx}\right|_{x=L}\approx-D_e\frac{C_N-C_{N-1}}{h}$$</div></div></div></details></template>
-<template data-subtitle="مدل حرکت مرتبه دوم و سرعت حدی" data-tag="IVP" data-title="مسئله مقدار اولیه: سقوط ذره با مقاومت غیرخطی" id="series-4-q1">
-<div class="problem no-select">
-<p>
-یک ذره کروی در سیالی ساکن سقوط می‌کند. نیروی مقاومت متناسب با
-<span dir="ltr">v|v|</span> در نظر گرفته شده و محور رو به پایین مثبت است:
-</p>
-<div class="equation" data-tex="$$\frac{dz}{dt}=v$$">$$\frac{dz}{dt}=v$$</div>
-<div class="equation" data-tex="$$\frac{dv}{dt}=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|$$">$$\frac{dv}{dt}=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|$$</div>
-<div class="equation" data-tex="$$z(0)=0,\qquad v(0)=0$$">$$z(0)=0,\qquad v(0)=0$$</div>
-<p>
+<template data-subtitle="سینتیک مونود دو-محدودیتی، مصرف سوبسترا و انتقال اکسیژن" data-tag="IVP / Bioprocess" data-title="مسئله مقدار اولیه: رشد میکروبی در بیورآکتور هوازی ناپیوسته" id="series-4-q1"><div class="problem no-select"><p>
+در یک بیورآکتور هوازی ناپیوسته، رشد میکروارگانیسم به‌طور هم‌زمان توسط
+غلظت سوبسترا و اکسیژن محلول محدود می‌شود. نرخ رشد ویژه از رابطه مونود
+دو-محدودیتی به دست می‌آید:
+</p><div class="equation" data-tex="$$\mu=\mu_{\max}\frac{S}{K_s+S}\frac{C}{K_o+C}$$">$$\mu=\mu_{\max}\frac{S}{K_s+S}\frac{C}{K_o+C}$$</div><div class="equation" data-tex="$$\frac{dX}{dt}=(\mu-k_d)X$$">$$\frac{dX}{dt}=(\mu-k_d)X$$</div><div class="equation" data-tex="$$\frac{dS}{dt}=-\frac{1}{Y_{X/S}}\mu X$$">$$\frac{dS}{dt}=-\frac{1}{Y_{X/S}}\mu X$$</div><div class="equation" data-tex="$$\frac{dC}{dt}=k_La(C^\ast-C)-q_{O,\max}X\frac{S}{K_s+S}\frac{C}{K_o+C}$$">$$\frac{dC}{dt}=k_La(C^\ast-C)-q_{O,\max}X\frac{S}{K_s+S}\frac{C}{K_o+C}$$</div><div class="equation" data-tex="$$X(0)=0.15,\qquad S(0)=20,\qquad C(0)=0.80$$">$$X(0)=0.15,\qquad S(0)=20,\qquad C(0)=0.80$$</div><p>
 <strong>وظیفه کدنویسی:</strong>
-حرکت را تا <span dir="ltr">t = 5 s</span> با
-<span dir="ltr">h = 0.01 s</span> حل کنید. نمودارهای سرعت و موقعیت را رسم کرده و
-سرعت حدی نظری را با سرعت عددی انتهای بازه مقایسه کنید.
-</p>
-</div>
-<div class="fixed-constants no-select">
-<strong>داده‌های ثابت این سری</strong>
-<div class="equation" data-tex="$$g=9.81,\quad \rho_p=2500,\quad \rho_f=1000,\quad c_d=0.18$$">$$g=9.81,\quad \rho_p=2500,\quad \rho_f=1000,\quad c_d=0.18$$</div>
-</div>
-<details class="solution no-select" open="">
-<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
-<div class="solution-body">
-<div class="solution-step">
-<h4>۱) بردار حالت</h4>
-<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}z\\v\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}z\\v\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}v\\g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}v\\g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$</div>
-</div>
-<div class="solution-step">
-<h4>۲) سرعت حدی نظری</h4>
-<div class="equation" data-tex="$$0=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv_t^2$$">$$0=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv_t^2$$</div><div class="equation" data-tex="$$v_t=\sqrt{\frac{g\left(1-\rho_f/\rho_p\right)}{c_d}}$$">$$v_t=\sqrt{\frac{g\left(1-\rho_f/\rho_p\right)}{c_d}}$$</div>
-</div>
-<div class="solution-step">
-<h4>۳) رابطه مورد استفاده در کدنویسی RK4</h4>
-<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
-</div>
-</div>
-</details>
-</template>
+دستگاه را در بازه <span dir="ltr">0 ≤ t ≤ 12 h</span> با روش
+رانگ-کوتای مرتبه چهارم و گام <span dir="ltr">h = 0.01 h</span> حل کنید.
+نمودارهای <span dir="ltr">X(t)</span>، <span dir="ltr">S(t)</span> و
+<span dir="ltr">C(t)</span> را رسم کرده و موارد زیر را گزارش دهید:
+بیشینه زیست‌توده و زمان وقوع آن، کمینه اکسیژن محلول و زمان وقوع آن، و
+اولین زمانی که <span dir="ltr">S ≤ 0.1 g/L</span> می‌شود.
+</p></div><div class="fixed-constants no-select"><strong>داده‌های ثابت این سری</strong><div class="equation" data-tex="$$\mu_{\max}=0.55,\ K_s=0.50,\ K_o=0.08,\ k_d=0.02,\ Y_{X/S}=0.50,\ k_La=4.0,\ C^\ast=1.0,\ q_{O,\max}=0.75$$">$$\mu_{\max}=0.55,\ K_s=0.50,\ K_o=0.08,\ k_d=0.02,\ Y_{X/S}=0.50,\ k_La=4.0,\ C^\ast=1.0,\ q_{O,\max}=0.75$$</div></div><details class="solution no-select" open=""><summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary><div class="solution-body"><div class="solution-step"><h4>۱) تعریف عوامل محدودکننده و نرخ رشد ویژه</h4><div class="equation" data-tex="$$f_S=\frac{S}{K_s+S},\qquad f_O=\frac{C}{K_o+C}$$">$$f_S=\frac{S}{K_s+S},\qquad f_O=\frac{C}{K_o+C}$$</div><div class="equation" data-tex="$$\mu=\mu_{\max}f_Sf_O$$">$$\mu=\mu_{\max}f_Sf_O$$</div></div><div class="solution-step"><h4>۲) تعریف بردار حالت و دستگاه معادلات</h4><div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}X\\S\\C\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}X\\S\\C\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}\prime=\begin{bmatrix}(\mu-k_d)X\\-\mu X/Y_{X/S}\\k_La(C^\ast-C)-q_{O,\max}Xf_Sf_O\end{bmatrix}$$">$$\mathbf{Y}\prime=\begin{bmatrix}(\mu-k_d)X\\-\mu X/Y_{X/S}\\k_La(C^\ast-C)-q_{O,\max}Xf_Sf_O\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}0.15\\20\\0.80\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}0.15\\20\\0.80\end{bmatrix}$$</div></div><div class="solution-step"><h4>۳) رابطه رانگ-کوتای مرتبه چهارم برای دستگاه</h4><div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(t_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(t_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(t_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(t_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(t_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(t_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}(t_n+h,\mathbf{Y}_n+h\mathbf{k}_3)$$">$$\mathbf{k}_4=\mathbf{f}(t_n+h,\mathbf{Y}_n+h\mathbf{k}_3)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4)$$</div></div><div class="solution-step"><h4>۴) استخراج شاخص‌های خواسته‌شده</h4><p>
+پس از پایان انتگرال‌گیری، با استفاده از <span dir="ltr">max</span> و
+<span dir="ltr">min</span> مقدار و زمان بیشینه X و کمینه C تعیین می‌شود.
+برای زمان اتمام سوبسترا، اولین اندیسی که
+<span dir="ltr">S ≤ 0.1</span> است انتخاب می‌شود.
+</p></div></div></details></template>
 <template data-subtitle="تولید حرارت و شرط جابه‌جایی در سطح خارجی" data-tag="BVP" data-title="مسئله مقدار مرزی: هدایت شعاعی در استوانه توخالی" id="series-4-q2">
 <div class="problem no-select">
 <p>
@@ -1718,6 +1702,31 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         year:"numeric",month:"2-digit",day:"2-digit",
         hour:"2-digit",minute:"2-digit",second:"2-digit"
       }).format(new Date(timestamp));
+    }
+
+    function formatExamDuration(){
+      if(!state.startedAt){
+        return "ثبت نشده";
+      }
+
+      const endTimestamp =
+        state.finishedAt ||
+        (state.status==="active" ? Date.now() : state.deadline) ||
+        Date.now();
+
+      const elapsedMs = Math.max(0, endTimestamp - state.startedAt);
+      const totalSeconds = Math.floor(elapsedMs / 1000);
+
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      const clock =
+        `${String(hours).padStart(2,"0")}:` +
+        `${String(minutes).padStart(2,"0")}:` +
+        `${String(seconds).padStart(2,"0")}`;
+
+      return toFaDigits(clock);
     }
 
     function makeAttemptCode(){
@@ -2442,8 +2451,12 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
     <tr>
       <th>زمان شروع</th>
       <td>${escapeHtml(formatDate(state.startedAt))}</td>
-      <th>زمان پایان/مهلت</th>
+      <th>زمان ثبت نهایی</th>
       <td>${escapeHtml(formatDate(state.finishedAt||state.deadline))}</td>
+    </tr>
+    <tr>
+      <th>مدت زمان آزمون</th>
+      <td colspan="3">${escapeHtml(formatExamDuration())}</td>
     </tr>
   </table>
 
