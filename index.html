@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="fa">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>آزمون کدنویسی MATLAB ـ سری اول</title>
+<style>
+    :root{
+      --blue:#0072bd;
+      --blue-dark:#005489;
+      --orange:#d95319;
+      --yellow:#edb120;
+      --green:#157347;
+      --red:#b42318;
+      --ink:#17222b;
+      --muted:#667784;
+      --page:#edf3f6;
+      --surface:#fff;
+      --border:#d5e0e6;
+      --editor:#1e1e1e;
+      --editor-top:#2d2d30;
+      --editor-gutter:#252526;
+      --editor-border:#3c3c3c;
+      --shadow:0 12px 34px rgba(29,52,67,.09);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left,rgba(0,114,189,.10),transparent 32%),
+        linear-gradient(180deg,#f8fafb,var(--page));
+      font-family:Tahoma,"Segoe UI",Arial,sans-serif;
+      line-height:1.8;
+    }
+
+    button,input,textarea,select{font:inherit}
+    [hidden]{display:none!important}
+
+    .shell{
+      width:min(1180px,calc(100% - 28px));
+      margin:26px auto 70px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      padding:34px;
+      border-radius:22px;
+      color:#fff;
+      background:linear-gradient(135deg,#003c5c,#0072bd 65%,#00a0c6);
+      box-shadow:0 20px 52px rgba(0,61,92,.21);
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      width:290px;height:290px;
+      left:-105px;top:-135px;
+      border:48px solid rgba(255,255,255,.08);
+      border-radius:50%;
+    }
+
+    .hero-badge{
+      display:inline-flex;
+      position:relative;
+      z-index:1;
+      padding:6px 12px;
+      margin-bottom:11px;
+      border:1px solid rgba(255,255,255,.30);
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .hero h1{
+      position:relative;
+      z-index:1;
+      margin:0;
+      font-size:clamp(28px,4vw,45px);
+      line-height:1.35;
+    }
+
+    .hero p{
+      position:relative;
+      z-index:1;
+      max-width:830px;
+      margin:10px 0 0;
+      color:rgba(255,255,255,.88);
+    }
+
+    .card{
+      margin-top:22px;
+      padding:25px;
+      border:1px solid var(--border);
+      border-radius:17px;
+      background:var(--surface);
+      box-shadow:var(--shadow);
+    }
+
+    .card h2,.card h3{margin-top:0}
+    .lead{margin:0 0 20px;color:var(--muted)}
+
+    .notice{
+      margin:16px 0;
+      padding:14px 16px;
+      border-right:4px solid var(--yellow);
+      border-radius:10px;
+      background:#fff8e8;
+      color:#694709;
+    }
+
+    .notice-danger{
+      border-right-color:var(--red);
+      background:#fff0ef;
+      color:#7a271a;
+    }
+
+    .notice-success{
+      border-right-color:var(--green);
+      background:#edf9f2;
+      color:#135b3c;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:17px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .field input,.field textarea,.field select{
+      width:100%;
+      min-height:48px;
+      padding:10px 12px;
+      border:1px solid #bccbd3;
+      border-radius:10px;
+      outline:none;
+      color:var(--ink);
+      background:#fbfdfe;
+    }
+
+    .field textarea{min-height:105px;resize:vertical}
+
+    .field input:focus,.field textarea:focus,.field select:focus{
+      border-color:var(--blue);
+      box-shadow:0 0 0 4px rgba(0,114,189,.12);
+    }
+
+    .pledge{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin-top:17px;
+      padding:14px;
+      border:1px solid #bfd8e5;
+      border-radius:11px;
+      background:#f0f9fd;
+    }
+
+    .pledge input{width:20px;height:20px;margin-top:3px}
+
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top:19px;
+    }
+
+    .btn{
+      min-height:45px;
+      padding:10px 17px;
+      border:0;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:800;
+      transition:transform .15s,background .15s,opacity .15s;
+    }
+
+    .btn:hover:not(:disabled){transform:translateY(-1px)}
+    .btn:disabled{cursor:not-allowed;opacity:.45}
+
+    .btn-primary{color:#fff;background:var(--blue)}
+    .btn-primary:hover:not(:disabled){background:var(--blue-dark)}
+    .btn-secondary{color:#32434e;background:#fff;border:1px solid #c4d0d6}
+    .btn-success{color:#fff;background:var(--green)}
+    .btn-danger{color:#fff;background:var(--red)}
+
+    .network-status{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      background:#fff0ef;
+      color:var(--red);
+    }
+
+    .network-status.offline{
+      background:#eaf8f0;
+      color:var(--green);
+    }
+
+    .dot-status{
+      width:9px;height:9px;border-radius:50%;
+      background:currentColor;
+    }
+
+    .toolbar{
+      position:sticky;
+      top:9px;
+      z-index:40;
+      display:grid;
+      grid-template-columns:1fr auto auto auto;
+      gap:13px;
+      align-items:center;
+      margin-top:20px;
+      padding:14px 16px;
+      border:1px solid rgba(190,204,212,.9);
+      border-radius:15px;
+      background:rgba(255,255,255,.95);
+      backdrop-filter:blur(10px);
+      box-shadow:0 13px 34px rgba(35,55,68,.14);
+    }
+
+    .student-mini strong{display:block}
+    .student-mini span{color:var(--muted);font-size:12px}
+
+    .timer{
+      min-width:164px;
+      padding:9px 13px;
+      border-radius:11px;
+      color:#fff;
+      background:#163f59;
+      text-align:center;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .timer small{
+      display:block;
+      color:rgba(255,255,255,.72);
+      font-size:10px;
+      letter-spacing:.05em;
+    }
+
+    .timer strong{
+      display:block;
+      font-size:24px;
+      line-height:1.15;
+    }
+
+    .timer.warn{background:#936300}
+    .timer.danger{background:var(--red)}
+
+    .integrity-pill{
+      min-width:145px;
+      padding:9px 12px;
+      border-radius:11px;
+      color:#fff;
+      background:#425466;
+      text-align:center;
+    }
+
+    .integrity-pill small{display:block;color:rgba(255,255,255,.72);font-size:10px}
+    .integrity-pill strong{font-size:18px}
+
+    .progress-wrap{
+      display:flex;
+      gap:13px;
+      align-items:center;
+      margin-top:18px;
+    }
+
+    .progress-track{
+      flex:1;
+      height:9px;
+      overflow:hidden;
+      border-radius:999px;
+      background:#e3ebef;
+    }
+
+    .progress-bar{
+      width:0;height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg,var(--blue),#19a8c9);
+      transition:width .25s;
+    }
+
+    .progress-label{min-width:120px;color:var(--muted);font-size:13px}
+
+    .question-card{overflow:hidden;padding:0}
+
+    .question-head{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      align-items:center;
+      padding:19px 22px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(90deg,#e8f5fb,#fff);
+    }
+
+    .question-title{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .q-number{
+      display:grid;
+      width:43px;height:43px;
+      flex:0 0 auto;
+      place-items:center;
+      border-radius:11px;
+      color:#fff;
+      background:var(--blue);
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .question-head h2{margin:0;font-size:20px}
+    .question-head p{margin:2px 0 0;color:var(--muted);font-size:13px}
+
+    .tag{
+      padding:6px 11px;
+      border:1px solid #b7dce9;
+      border-radius:999px;
+      color:var(--blue-dark);
+      background:#fff;
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .question-body{padding:23px}
+
+    .problem{
+      padding:17px 18px;
+      border-right:4px solid var(--orange);
+      border-radius:9px;
+      background:#f8fafb;
+    }
+
+    .problem p{margin:0 0 8px}
+    .problem ul,.instructions ul{margin:8px 0 0;padding-right:22px}
+
+    .equation{
+      direction:ltr;
+      margin:12px auto;
+      padding:10px 14px;
+      border:1px solid #dce6eb;
+      border-radius:9px;
+      background:#fff;
+      font-family:"Cambria Math","Times New Roman",serif;
+      font-size:18px;
+      text-align:center;
+      unicode-bidi:isolate;
+    }
+
+    .constants{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin:17px 0;
+    }
+
+    .constant-option{
+      position:relative;
+      display:block;
+      padding:13px;
+      border:1px solid #cbd8de;
+      border-radius:11px;
+      background:#fff;
+      cursor:pointer;
+      transition:border-color .15s,background .15s,transform .15s;
+    }
+
+    .constant-option:hover{transform:translateY(-1px);border-color:var(--blue)}
+    .constant-option:has(input:checked){
+      border-color:var(--blue);
+      background:#eaf6fb;
+      box-shadow:0 0 0 3px rgba(0,114,189,.10);
+    }
+
+    .constant-option input{position:absolute;left:10px;top:10px}
+    .constant-option strong{display:block;color:var(--blue-dark)}
+    .constant-option span{display:block;font-size:13px;color:#42525d}
+
+    details.solution{
+      margin:18px 0;
+      overflow:hidden;
+      border:1px solid #b9d9c7;
+      border-radius:12px;
+      background:#fbfffc;
+    }
+
+    details.solution summary{
+      padding:14px 16px;
+      cursor:pointer;
+      list-style:none;
+      color:#155b3e;
+      background:#edf9f2;
+      font-weight:900;
+    }
+
+    details.solution summary::-webkit-details-marker{display:none}
+    .solution-body{padding:18px}
+    .solution-step{
+      margin:13px 0;
+      padding:13px 15px;
+      border-right:3px solid var(--green);
+      border-radius:8px;
+      background:#fff;
+    }
+
+    .solution-step h4{margin:0 0 7px;color:#155b3e}
+
+    .answer-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:13px;
+      margin:16px 0;
+    }
+
+    .instructions{
+      margin:17px 0;
+      padding:15px 17px;
+      border:1px solid #d9e4e9;
+      border-radius:10px;
+      background:#f9fbfc;
+    }
+
+    .matlab-window{
+      overflow:hidden;
+      border:1px solid #242424;
+      border-radius:12px;
+      background:var(--editor);
+      box-shadow:0 11px 27px rgba(0,0,0,.17);
+    }
+
+    .matlab-titlebar{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      align-items:center;
+      min-height:44px;
+      padding:0 14px;
+      border-bottom:1px solid #363636;
+      color:#d8d8d8;
+      background:var(--editor-top);
+      direction:ltr;
+    }
+
+    .window-controls{display:flex;gap:7px}
+    .window-dot{width:11px;height:11px;border-radius:50%}
+    .window-dot.red{background:#e06c60}
+    .window-dot.yellow{background:#d9ba66}
+    .window-dot.green{background:#65c466}
+    .filename{font:13px Consolas,"Courier New",monospace}
+    .language{justify-self:end;color:#a7adb1;font-size:12px}
+
+    .editor-grid{
+      display:grid;
+      grid-template-columns:54px 1fr;
+      direction:ltr;
+      min-height:330px;
+    }
+
+    .line-numbers{
+      height:330px;
+      overflow:hidden;
+      margin:0;
+      padding:15px 10px 15px 0;
+      border-right:1px solid var(--editor-border);
+      color:#858585;
+      background:var(--editor-gutter);
+      font:15px/1.55 Consolas,"Courier New",monospace;
+      text-align:right;
+      user-select:none;
+    }
+
+    .code-editor{
+      width:100%;
+      height:330px;
+      min-height:330px;
+      overflow:auto;
+      resize:vertical;
+      margin:0;
+      padding:15px 16px;
+      border:0;
+      outline:none;
+      color:#dcdcdc;
+      background:var(--editor);
+      caret-color:#fff;
+      font:15px/1.55 Consolas,Monaco,"Courier New",monospace;
+      tab-size:4;
+      white-space:pre;
+      direction:ltr;
+      text-align:left;
+    }
+
+    .code-editor::placeholder{color:#57a64a;opacity:.88}
+    .code-editor:focus{box-shadow:inset 0 0 0 1px rgba(0,114,189,.9)}
+    .code-editor:disabled{cursor:not-allowed;opacity:.75}
+
+    .statusbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      min-height:34px;
+      padding:0 14px;
+      color:#fff;
+      background:var(--blue);
+      direction:ltr;
+      font:12px Consolas,"Courier New",monospace;
+    }
+
+    .statusbar>div{display:flex;gap:15px}
+
+    .upload-panel{
+      margin-top:18px;
+      padding:16px;
+      border:1px dashed #9fb7c3;
+      border-radius:12px;
+      background:#f8fbfc;
+    }
+
+    .upload-panel h3{margin:0 0 5px;font-size:17px}
+    .upload-panel p{margin:0 0 12px;color:var(--muted);font-size:13px}
+
+    .image-preview{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+      gap:11px;
+      margin-top:13px;
+    }
+
+    .image-card{
+      position:relative;
+      overflow:hidden;
+      border:1px solid #cedbe1;
+      border-radius:10px;
+      background:#fff;
+    }
+
+    .image-card img{
+      display:block;
+      width:100%;
+      height:150px;
+      object-fit:cover;
+      background:#eef2f4;
+    }
+
+    .image-card footer{
+      padding:7px 9px;
+      overflow:hidden;
+      color:var(--muted);
+      font-size:11px;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .image-delete{
+      position:absolute;
+      top:6px;left:6px;
+      width:30px;height:30px;
+      padding:0;
+      border:0;
+      border-radius:50%;
+      color:#fff;
+      background:rgba(180,35,24,.92);
+      cursor:pointer;
+      font-weight:900;
+    }
+
+    .bottom-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      align-items:center;
+      margin-top:24px;
+      padding:16px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .bottom-actions p{margin:0;color:var(--muted);font-size:13px}
+
+    .locked{
+      padding:38px 22px;
+      text-align:center;
+    }
+
+    .locked h2{font-size:28px}
+    .locked p{max-width:680px;margin:8px auto;color:var(--muted)}
+
+    .integrity-log{
+      max-height:210px;
+      overflow:auto;
+      margin-top:13px;
+      padding:10px;
+      border:1px solid #d9e3e8;
+      border-radius:9px;
+      background:#fbfcfd;
+      font-size:12px;
+    }
+
+    .integrity-log div{
+      padding:6px 8px;
+      border-bottom:1px solid #e4ebef;
+    }
+
+    .integrity-log div:last-child{border-bottom:0}
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      z-index:500;
+      display:grid;
+      place-items:center;
+      padding:20px;
+      background:rgba(8,16,23,.88);
+      backdrop-filter:blur(8px);
+    }
+
+    .overlay-box{
+      width:min(560px,100%);
+      padding:27px;
+      border-radius:17px;
+      color:#fff;
+      background:#172733;
+      box-shadow:0 24px 70px rgba(0,0,0,.42);
+      text-align:center;
+    }
+
+    .overlay-box h2{margin:0 0 8px}
+    .overlay-box p{color:#cbd7dd}
+
+    .browser-block{
+      padding:44px 24px;
+      text-align:center;
+    }
+
+    .browser-block h2{
+      margin-bottom:8px;
+      color:var(--red);
+      font-size:28px;
+    }
+
+    .browser-block p{
+      max-width:720px;
+      margin:8px auto;
+      color:var(--muted);
+    }
+
+    .no-select{
+      -webkit-user-select:none;
+      user-select:none;
+    }
+
+    .print-only{display:none}
+
+    .print-code{
+      min-height:100px;
+      padding:11px;
+      border:1px solid #666;
+      background:#fafafa;
+      color:#000;
+      direction:ltr;
+      text-align:left;
+      font:10pt/1.45 Consolas,"Courier New",monospace;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+
+    @media(max-width:850px){
+      .shell{width:min(100% - 18px,1180px);margin-top:9px}
+      .hero{padding:24px;border-radius:14px}
+      .form-grid,.answer-grid{grid-template-columns:1fr}
+      .constants{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .toolbar{position:static;grid-template-columns:1fr}
+      .timer,.integrity-pill{width:100%}
+      .question-head{align-items:flex-start}
+      .question-body{padding:17px}
+      .bottom-actions{flex-direction:column;align-items:stretch}
+
+    @media(max-width:500px){
+      .constants{grid-template-columns:1fr}
+      .statusbar>div:last-child{display:none}
+    }
+
+    @media print{
+      @page{size:A4;margin:13mm}
+      body{background:#fff;color:#000}
+      .shell{width:100%;margin:0}
+      .screen-only,.toolbar,.progress-wrap,.bottom-actions,.overlay,.watermarks,#startPage{display:none!important}
+      .print-only{display:block!important}
+      .hero{
+        padding:0 0 10px;
+        border-radius:0;
+        color:#000;
+        background:#fff!important;
+        box-shadow:none;
+      }
+      .hero::after,.hero-badge{display:none}
+      .hero h1{font-size:22pt}
+      .hero p{color:#333}
+      .card{
+        margin-top:11px;
+        padding:13px;
+        border:1px solid #777;
+        border-radius:0;
+        box-shadow:none;
+      }
+      .question-card{padding:12px;page-break-inside:auto}
+      .constants,.instructions,.answer-grid,.upload-panel{
+        display:none!important;
+      }
+      .question-body{padding:0}
+      .question-head{padding:10px 12px;background:#eee!important}
+      .q-number{width:31px;height:31px;border:1px solid #000;border-radius:0;color:#000;background:#fff!important}
+      .question-body{padding:12px}
+      .problem,.solution-step,.instructions{background:#fff!important}
+      .matlab-window{display:none}
+      details.solution{display:block}
+      details.solution summary{display:none}
+      .solution-body{display:block!important;padding:10px}
+      .upload-panel{border:1px solid #777}
+      .image-delete{display:none}
+      .image-card img{height:auto;max-height:260px;object-fit:contain}
+    }
+  
+
+    .fixed-constants{
+      margin:16px 0;
+      padding:13px 16px;
+      border:1px solid #b8d8e6;
+      border-radius:11px;
+      background:#edf8fc;
+      text-align:center;
+    }
+
+    .fixed-constants strong{
+      display:block;
+      margin-bottom:5px;
+      color:var(--blue-dark);
+    }
+
+    .equation{
+      direction:ltr;
+      unicode-bidi:isolate;
+      overflow-x:auto;
+      padding:10px 14px;
+      font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;
+      font-size:18px;
+      line-height:1.7;
+    }
+
+    .equation mjx-container{
+      margin:.25rem 0!important;
+      min-width:max-content;
+    }
+
+    .privacy-shield{
+      position:fixed;
+      inset:0;
+      z-index:5000;
+      display:grid;
+      place-items:center;
+      padding:22px;
+      color:#fff;
+      background:#081017;
+    }
+
+    .privacy-shield-box{
+      width:min(560px,100%);
+      padding:28px;
+      border:1px solid #44545f;
+      border-radius:16px;
+      background:#152631;
+      text-align:center;
+      box-shadow:0 24px 70px rgba(0,0,0,.45);
+    }
+
+    .privacy-shield-box h2{
+      margin:0 0 8px;
+    }
+
+    .privacy-shield-box p{
+      margin:0;
+      color:#cbd6dc;
+    }
+
+    .print-warning-log{
+      direction:rtl;
+      text-align:right;
+    }
+
+    .print-warning-log ol{
+      padding-right:22px;
+    }
+
+    .print-warning-log li{
+      margin:7px 0;
+      padding-bottom:6px;
+      border-bottom:1px solid #ddd;
+    }
+
+    @media print{
+      .fixed-constants{
+        border:1px solid #777;
+        background:#fff!important;
+      }
+
+      .print-warning-section{
+        page-break-before:always;
+      }
+
+      details.solution{
+        page-break-inside:auto;
+      }
+
+      .solution-step{
+        page-break-inside:avoid;
+      }
+
+      .equation{
+        overflow:visible;
+      }
+    }
+
+
+    .equation{
+      min-height:46px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      direction:ltr;
+      unicode-bidi:isolate;
+      overflow-x:auto;
+      text-align:center;
+      white-space:normal;
+    }
+
+    .equation mjx-container[display="true"]{
+      margin:.35rem 0!important;
+    }
+
+    .equation mjx-container{
+      max-width:100%;
+    }
+
+    @media print{
+      .equation{
+        min-height:auto;
+        overflow:visible;
+        page-break-inside:avoid;
+      }
+    }
+
+
+    .availability-notice{
+      border-right-color:var(--blue);
+      background:#edf8fc;
+      color:#174f6d;
+      font-weight:800;
+    }
+
+    .availability-notice.closed{
+      border-right-color:var(--red);
+      background:#fff0ef;
+      color:#7a271a;
+    }
+
+    .question-dynamic{
+      display:block;
+    }
+
+    .question-dynamic .problem,
+    .question-dynamic .fixed-constants,
+    .question-dynamic details.solution{
+      margin-bottom:17px;
+    }
+
+    .question-dynamic .equation{
+      min-height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      direction:ltr;
+      unicode-bidi:isolate;
+      overflow-x:auto;
+      text-align:center;
+    }
+
+    .question-dynamic .equation mjx-container[display="true"]{
+      margin:.3rem 0!important;
+    }
+
+    @media print{
+      .question-dynamic .equation{
+        overflow:visible;
+        page-break-inside:avoid;
+      }
+    }
+</style>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body>
+<main class="shell">
+<header class="hero">
+<div class="hero-badge" id="heroSeriesBadge">آزمون زمان‌بندی‌شده ـ معادلات دیفرانسیل معمولی</div>
+<h1>آزمون کدنویسی MATLAB</h1>
+<p>این آزمون شامل یک مسئله مقدار اولیه و یک مسئله مقدار مرزی است. صورت سؤال و پاسخ کامل ریاضی در اختیار دانشجو قرار دارد و تنها کد MATLAB نوشته‌شده ارزیابی می‌شود.</p>
+</header>
+<!-- START PAGE -->
+<section class="card" id="startPage">
+<h2>ورود به آزمون</h2>
+<p class="lead">
+        اطلاعات خود را با دقت وارد کنید. نام و شماره دانشجویی برای نام‌گذاری فایل نهایی پاسخ استفاده می‌شوند.
+      </p>
+<div class="notice">
+<strong>راهنمای کامل نحوه برگزاری آزمون</strong>
+<ol>
+<li>این آزمون فقط در نسخه دسکتاپ مرورگر <b>Google Chrome</b> باز می‌شود.</li>
+<li>پس از فشردن دکمه شروع، شمارش معکوس دو ساعته آغاز می‌شود و با Refresh یا بستن و بازکردن صفحه از ابتدا شروع نخواهد شد.</li>
+<li>در طول آزمون پاسخ‌ها به‌صورت خودکار در همین مرورگر ذخیره می‌شوند.</li>
+<li>آزمون هنگام شروع وارد حالت تمام‌صفحه می‌شود. تغییر تب و خروج از تمام‌صفحه فقط در گزارش آزمون ثبت می‌شود و باعث قفل خودکار نخواهد شد.</li>
+<li>تنها پاسخ قابل ارزیابی، کد MATLAB نوشته‌شده در دو ویرایشگر است. بخش پاسخ دست‌نویس صرفاً راهنمای کامل حل ریاضی است.</li>
+<li>استفاده از هوش مصنوعی، موتور جست‌وجو، پیام‌رسان، کپی‌کردن کد یا دریافت کمک از دیگران مجاز نیست.</li>
+<li>پس از پایان دستی آزمون یا اتمام زمان، محدودیت تمام‌صفحه برداشته و پنجره چاپ Chrome به‌طور خودکار باز می‌شود.</li>
+<li>در پنجره چاپ، گزینه <b>Save as PDF</b> را انتخاب کنید. نام پیشنهادی فایل به‌صورت <b>Fullname-StudentID.pdf</b> تنظیم می‌شود.</li>
+<li>فایل PDF پاسخ را در سریع‌ترین زمان ممکن در Google Form معرفی‌شده توسط استاد بارگذاری کنید. تا پایان بارگذاری، صفحه آزمون را نبندید.</li>
+</ol>
+</div>
+<div class="notice availability-notice" id="availabilityNotice">در حال بررسی زمان مجاز آزمون براساس ساعت تهران...</div><div class="notice notice-success">مجموعه سؤال هنگام فشردن دکمه شروع و براساس ساعت تهران تعیین می‌شود و تا پایان همان تلاش، حتی پس از Refresh، تغییر نمی‌کند.</div><div class="form-grid">
+<div class="field">
+<label for="fullName">نام و نام خانوادگی</label>
+<input autocomplete="off" id="fullName" placeholder="نام کامل دانشجو" type="text"/>
+</div>
+<div class="field">
+<label for="studentId">شماره دانشجویی</label>
+<input autocomplete="off" id="studentId" placeholder="شماره دانشجویی" type="text"/>
+</div>
+</div>
+<label class="pledge">
+<input id="pledge" type="checkbox"/>
+<span>
+          متعهد می‌شوم کدها را شخصاً بنویسم و از هوش مصنوعی، موتور جست‌وجو، پیام‌رسان،
+          کد آماده، همکاری دیگران یا هر ابزار بیرونی برای تولید پاسخ استفاده نکنم.
+        </span>
+</label>
+<div class="btn-row">
+<button class="btn btn-primary" id="startButton" type="button">
+          شروع آزمون دو ساعته
+        </button>
+</div>
+<div class="notice notice-success" hidden="" id="restoreNotice">
+        یک آزمون فعال یا ذخیره‌شده در این مرورگر پیدا شد و بدون تغییر زمان و پاسخ‌ها بازیابی می‌شود.
+      </div>
+</section>
+<section class="card browser-block" hidden="" id="browserBlockedPage">
+<h2>مرورگر پشتیبانی نمی‌شود</h2>
+<p>
+        این آزمون تنها با نسخه دسکتاپ مرورگر <b>Google Chrome</b> قابل اجرا است.
+        مرورگرهای Edge، Firefox، Opera، Safari و مرورگرهای داخلی تلفن همراه پذیرفته نمی‌شوند.
+      </p>
+<p>صفحه را در Google Chrome باز کنید و دوباره تلاش کنید.</p>
+</section>
+<!-- EXAM -->
+<section hidden="" id="examPage">
+<div class="toolbar screen-only">
+<div class="student-mini">
+<strong id="activeName">دانشجو</strong>
+<span id="activeMeta">شماره دانشجویی ـ کد آزمون</span>
+</div>
+<div class="timer" id="timerBox">
+<small>زمان باقی‌مانده</small>
+<strong id="timerText">۰۲:۰۰:۰۰</strong>
+</div>
+<div class="integrity-pill">
+<small>رخدادهای ثبت‌شده</small>
+<strong id="violationCount">۰ رخداد</strong>
+</div>
+<button class="btn btn-secondary" id="fullscreenButton" type="button">
+          ورود به تمام‌صفحه
+        </button>
+</div>
+<div class="progress-wrap screen-only">
+<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+<div class="progress-label" id="progressLabel">۰٪ تکمیل</div>
+</div>
+<section class="card print-only">
+<h2>مشخصات دانشجو</h2>
+<p><strong>نام:</strong> <span id="printName"></span></p>
+<p><strong>شماره دانشجویی:</strong> <span id="printId"></span></p>
+<p><strong>کد آزمون:</strong> <span id="printAttempt"></span></p>
+<p><strong>زمان شروع:</strong> <span id="printStart"></span></p>
+<p><strong>مهلت پایان:</strong> <span id="printDeadline"></span></p>
+</section>
+<!-- Q1 -->
+<section class="card question-card">
+<div class="question-head no-select">
+<div class="question-title">
+<div class="q-number">۱</div>
+<div>
+<h2 id="q1Title">مسئله مقدار اولیه: حرکت توپک در خط لوله</h2>
+<p id="q1Subtitle">تبدیل مدل به دستگاه مرتبه اول و حل عددی با رانگ–کوتای مرتبه چهارم</p>
+</div>
+</div>
+<span class="tag" id="q1Tag">IVP</span>
+</div>
+<div class="question-body"><div class="question-dynamic" id="q1Dynamic"></div>
+<div class="matlab-window screen-only">
+<div class="matlab-titlebar">
+<div class="window-controls">
+<span class="window-dot red"></span>
+<span class="window-dot yellow"></span>
+<span class="window-dot green"></span>
+</div>
+<div class="filename" id="q1Filename">series1_ivp.m</div>
+<div class="language">MATLAB</div>
+</div>
+<div class="editor-grid">
+<pre class="line-numbers" id="lines-q1">1</pre>
+<textarea autocapitalize="off" autocomplete="off" autocorrect="off" class="code-editor" data-editor="q1" id="codeQ1" placeholder="% کد MATLAB سؤال 1 از مجموعه تخصیص‌یافته را فقط با تایپ مستقیم وارد کنید..." spellcheck="false" wrap="off"></textarea>
+</div>
+<div class="statusbar">
+<div><span id="cursor-q1">Ln 1, Col 1</span><span id="total-q1">1 line</span></div>
+<div><span>Typing only</span><span>Auto-saved</span></div>
+</div>
+</div>
+<div class="print-only">
+<h3>پاسخ کدنویسی سؤال اول</h3>
+<pre class="print-code" id="printCodeQ1"></pre>
+</div>
+</div>
+</section>
+<!-- Q2 -->
+<section class="card question-card">
+<div class="question-head no-select">
+<div class="question-title">
+<div class="q-number">۲</div>
+<div>
+<h2 id="q2Title">مسئله مقدار مرزی: توزیع دما در پره حلقوی</h2>
+<p id="q2Subtitle">روش پرتابی، رانگ–کوتای مرتبه چهارم و اصلاح شیب با روش سکانت</p>
+</div>
+</div>
+<span class="tag" id="q2Tag">BVP</span>
+</div>
+<div class="question-body"><div class="question-dynamic" id="q2Dynamic"></div>
+<div class="matlab-window screen-only">
+<div class="matlab-titlebar">
+<div class="window-controls">
+<span class="window-dot red"></span>
+<span class="window-dot yellow"></span>
+<span class="window-dot green"></span>
+</div>
+<div class="filename" id="q2Filename">series1_bvp.m</div>
+<div class="language">MATLAB</div>
+</div>
+<div class="editor-grid">
+<pre class="line-numbers" id="lines-q2">1</pre>
+<textarea autocapitalize="off" autocomplete="off" autocorrect="off" class="code-editor" data-editor="q2" id="codeQ2" placeholder="% کد MATLAB سؤال 2 از مجموعه تخصیص‌یافته را فقط با تایپ مستقیم وارد کنید..." spellcheck="false" wrap="off"></textarea>
+</div>
+<div class="statusbar">
+<div><span id="cursor-q2">Ln 1, Col 1</span><span id="total-q2">1 line</span></div>
+<div><span>Typing only</span><span>Auto-saved</span></div>
+</div>
+</div>
+<div class="print-only">
+<h3>پاسخ کدنویسی سؤال دوم</h3>
+<pre class="print-code" id="printCodeQ2"></pre>
+</div>
+</div>
+</section><section class="card print-only print-warning-section" id="printWarningSection"><h2>گزارش اخطارها و رخدادهای آزمون</h2><p>رخدادهای ثبت‌شده مرورگر در طول آزمون در این بخش درج می‌شوند. ثبت رخداد به‌تنهایی به معنای تخلف قطعی نیست.</p><div class="print-warning-log" id="printWarningLog"></div></section>
+<section class="card screen-only">
+<h2>گزارش سلامت آزمون</h2>
+<p class="lead">تغییر تب، مخفی‌شدن صفحه، خروج از تمام‌صفحه، میانبرهای محدود و تلاش قابل‌تشخیص برای ثبت تصویر صفحه در این گزارش ثبت می‌شوند.</p>
+<div class="integrity-log" id="integrityLog"></div>
+</section>
+<div class="bottom-actions screen-only">
+<p>
+          هر دو کد MATLAB به‌صورت خودکار ذخیره می‌شوند. پس از پایان آزمون، پنجره چاپ پاسخ به‌طور خودکار باز خواهد شد.
+        </p>
+<div class="btn-row" style="margin-top:0"><button class="btn btn-primary" hidden="" id="printEndedButton" type="button">چاپ پاسخ‌ها</button>
+<button class="btn btn-danger" id="finishButton" type="button">پایان و قفل آزمون</button>
+</div>
+</div>
+</section>
+<!-- LOCKED -->
+<section class="card locked" hidden="" id="lockedPage">
+<h2 id="lockedTitle">آزمون قفل شد</h2>
+<p id="lockedMessage">پاسخ‌ها ذخیره و قفل شده‌اند. از «مشاهده پاسخ‌های ذخیره‌شده» می‌توانید به صفحه سؤال‌ها بازگردید و دکمه چاپ را ببینید. شروع آزمون مجدد فقط با رمز مجاز است.</p>
+<div class="btn-row" style="justify-content:center">
+<button class="btn btn-secondary" id="viewLockedButton" type="button">مشاهده پاسخ‌های ذخیره‌شده</button>
+<button class="btn btn-primary" id="printLockedButton" type="button">چاپ پاسخ‌ها</button>
+<button class="btn btn-danger" id="retryExamButton" type="button">شروع آزمون مجدد</button></div>
+</section>
+</main><div class="privacy-shield screen-only" hidden="" id="privacyShield"><div class="privacy-shield-box"><h2>نمایش سؤال موقتاً پوشانده شد</h2><p id="privacyShieldMessage">برای ادامه آزمون به پنجره Google Chrome بازگردید.</p></div></div>
+<div class="overlay" hidden="" id="integrityOverlay">
+<div class="overlay-box">
+<h2>محیط آزمون متوقف شده است</h2>
+<p id="overlayMessage">
+        برای ادامه آزمون دوباره وارد حالت تمام‌صفحه شوید.
+      </p>
+<div class="btn-row" style="justify-content:center">
+<button class="btn btn-primary" id="resumeButton" type="button">بررسی شرایط و ادامه</button>
+</div>
+</div>
+</div>
+<div hidden="" id="questionTemplates">
+<template data-subtitle="تبدیل مدل به دستگاه مرتبه اول و حل عددی با RK4" data-tag="IVP" data-title="مسئله مقدار اولیه: حرکت توپک در خط لوله" id="series-1-q1">
+<div class="problem no-select">
+<p>
+برای تخلیه مایع باقی‌مانده در یک خط لوله، توپکی تحت اثر فشار گاز حرکت می‌کند.
+اگر <b>z(t)</b> مسافت طی‌شده و <b>u(t)</b> سرعت توپک باشد، مدل حاکم برابر است با:
+</p>
+<div class="equation" data-tex="$$\frac{d}{dt}\left[u(L-z)\right]=a-b(L-z)u^2$$">$$\frac{d}{dt}\left[u(L-z)\right]=a-b(L-z)u^2$$</div>
+<div class="equation" data-tex="$$\frac{dz}{dt}=u$$">$$\frac{dz}{dt}=u$$</div>
+<div class="equation" data-tex="$$z(0)=0,\qquad u(0)=0$$">$$z(0)=0,\qquad u(0)=0$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+مدل را در بازه <span dir="ltr">0 ≤ t ≤ 4</span> با گام
+<span dir="ltr">h = 0.05</span> حل کنید؛ تغییرات موقعیت و سرعت را رسم کرده و
+مقادیر نهایی را نمایش دهید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$L=10,\qquad a=2.0,\qquad b=0.05$$">$$L=10,\qquad a=2.0,\qquad b=0.05$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) بسط مشتق حاصل‌ضرب</h4>
+<div class="equation" data-tex="$$\frac{d}{dt}\left[u(L-z)\right]=(L-z)\frac{du}{dt}+u\frac{d(L-z)}{dt}$$">$$\frac{d}{dt}\left[u(L-z)\right]=(L-z)\frac{du}{dt}+u\frac{d(L-z)}{dt}$$</div><div class="equation" data-tex="$$\frac{d(L-z)}{dt}=-\frac{dz}{dt}=-u$$">$$\frac{d(L-z)}{dt}=-\frac{dz}{dt}=-u$$</div><div class="equation" data-tex="$$\frac{d}{dt}\left[u(L-z)\right]=(L-z)\frac{du}{dt}-u^2$$">$$\frac{d}{dt}\left[u(L-z)\right]=(L-z)\frac{du}{dt}-u^2$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) استخراج دستگاه مرتبه اول</h4>
+<div class="equation" data-tex="$$(L-z)\frac{du}{dt}-u^2=a-b(L-z)u^2$$">$$(L-z)\frac{du}{dt}-u^2=a-b(L-z)u^2$$</div><div class="equation" data-tex="$$\frac{du}{dt}=\frac{a+u^2}{L-z}-bu^2$$">$$\frac{du}{dt}=\frac{a+u^2}{L-z}-bu^2$$</div><div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}z\\u\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}z\\u\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}u\\ \frac{a+u^2}{L-z}-bu^2\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}u\\ \frac{a+u^2}{L-z}-bu^2\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) رابطه مورد استفاده در کدنویسی RK4</h4>
+<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="تشکیل دستگاه سه‌قطری FDM و حل آن با یک روش ماتریسی" data-tag="BVP / FDM" data-title="مسئله مقدار مرزی: پره مستقیم با روش تفاضل محدود" id="series-1-q2"><div class="problem no-select"><p>
+یک پره مستقیم یک‌بعدی در حالت پایا در نظر بگیرید. دمای بی‌بعد پره از
+معادله مقدار مرزی زیر پیروی می‌کند:
+</p><div class="equation" data-tex="$$\frac{d^2\theta}{dx^2}-m^2\theta=0,\qquad 0\le x\le 1$$">$$\frac{d^2\theta}{dx^2}-m^2\theta=0,\qquad 0\le x\le 1$$</div><div class="equation" data-tex="$$\theta(0)=1,\qquad \theta(1)=0.2$$">$$\theta(0)=1,\qquad \theta(1)=0.2$$</div><p>
+<strong>وظیفه کدنویسی:</strong>
+بازه را با <span dir="ltr">h = 0.1</span> شبکه‌بندی کنید و مشتق دوم را با
+تفاضل مرکزی مرتبه دوم تقریب بزنید. دستگاه خطی
+<span dir="ltr">Aθ = b</span> را تشکیل دهید و حل آن را
+<strong>فقط با پیاده‌سازی یکی از روش‌های Gaussian elimination،
+Gauss–Jordan یا Gauss–Seidel</strong> انجام دهید.
+در کد مشخص کنید کدام روش را انتخاب کرده‌اید و نمودار
+<span dir="ltr">θ(x)</span> را رسم کنید.
+استفاده از <span dir="ltr">A\b</span>، <span dir="ltr">inv</span> و
+<span dir="ltr">linsolve</span> برای حل دستگاه مجاز نیست.
+</p></div><div class="fixed-constants no-select"><strong>داده‌های ثابت این سری</strong><div class="equation" data-tex="$$m=2,\qquad h=0.1,\qquad N=10$$">$$m=2,\qquad h=0.1,\qquad N=10$$</div></div><details class="solution no-select" open=""><summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary><div class="solution-body"><div class="solution-step"><h4>۱) تقریب تفاضل مرکزی در گره‌های داخلی</h4><div class="equation" data-tex="$$\theta''(x_i)\approx\frac{\theta_{i-1}-2\theta_i+\theta_{i+1}}{h^2}$$">$$\theta''(x_i)\approx\frac{\theta_{i-1}-2\theta_i+\theta_{i+1}}{h^2}$$</div><div class="equation" data-tex="$$\frac{\theta_{i-1}-2\theta_i+\theta_{i+1}}{h^2}-m^2\theta_i=0$$">$$\frac{\theta_{i-1}-2\theta_i+\theta_{i+1}}{h^2}-m^2\theta_i=0$$</div><div class="equation" data-tex="$$-\theta_{i-1}+\left(2+m^2h^2\right)\theta_i-\theta_{i+1}=0$$">$$-\theta_{i-1}+\left(2+m^2h^2\right)\theta_i-\theta_{i+1}=0$$</div></div><div class="solution-step"><h4>۲) اعمال شرایط مرزی</h4><div class="equation" data-tex="$$\theta_0=1,\qquad \theta_N=0.2$$">$$\theta_0=1,\qquad \theta_N=0.2$$</div><div class="equation" data-tex="$$\left(2+m^2h^2\right)\theta_1-\theta_2=\theta_0$$">$$\left(2+m^2h^2\right)\theta_1-\theta_2=\theta_0$$</div><div class="equation" data-tex="$$-\theta_{N-2}+\left(2+m^2h^2\right)\theta_{N-1}=\theta_N$$">$$-\theta_{N-2}+\left(2+m^2h^2\right)\theta_{N-1}=\theta_N$$</div></div><div class="solution-step"><h4>۳) ساختار دستگاه سه‌قطری</h4><div class="equation" data-tex="$$\mathbf{A}=\begin{bmatrix}d&amp;-1&amp;0&amp;\cdots&amp;0\\-1&amp;d&amp;-1&amp;\ddots&amp;\vdots\\0&amp;\ddots&amp;\ddots&amp;\ddots&amp;0\\\vdots&amp;\ddots&amp;-1&amp;d&amp;-1\\0&amp;\cdots&amp;0&amp;-1&amp;d\end{bmatrix},\qquad d=2+m^2h^2$$">$$\mathbf{A}=\begin{bmatrix}d&amp;-1&amp;0&amp;\cdots&amp;0\\-1&amp;d&amp;-1&amp;\ddots&amp;\vdots\\0&amp;\ddots&amp;\ddots&amp;\ddots&amp;0\\\vdots&amp;\ddots&amp;-1&amp;d&amp;-1\\0&amp;\cdots&amp;0&amp;-1&amp;d\end{bmatrix},\qquad d=2+m^2h^2$$</div><div class="equation" data-tex="$$\mathbf{b}=\begin{bmatrix}\theta_0&amp;0&amp;\cdots&amp;0&amp;\theta_N\end{bmatrix}^{T}$$">$$\mathbf{b}=\begin{bmatrix}\theta_0&amp;0&amp;\cdots&amp;0&amp;\theta_N\end{bmatrix}^{T}$$</div><div class="equation" data-tex="$$\mathbf{A}\boldsymbol{\theta}_{int}=\mathbf{b}$$">$$\mathbf{A}\boldsymbol{\theta}_{int}=\mathbf{b}$$</div></div><div class="solution-step"><h4>۴) بخش الزامی حل دستگاه</h4><p>
+یک تابع مستقل برای یکی از سه روش خواسته‌شده بنویسید. در روش Gauss–Seidel
+معیار توقف را بر اساس
+<span dir="ltr">norm(x_new-x_old,inf) &lt; 10⁻¹⁰</span>
+و حداکثر 10000 تکرار قرار دهید.
+</p></div></div></details></template>
+<template data-subtitle="حل دستگاه غلظت‌ها و تعیین بیشینه محصول میانی" data-tag="IVP" data-title="مسئله مقدار اولیه: واکنش‌های متوالی در واکنشگاه ناپیوسته" id="series-2-q1">
+<div class="problem no-select">
+<p>
+در یک واکنشگاه ناپیوسته، واکنش‌های متوالی مرتبه اول زیر انجام می‌شوند:
+</p>
+<div class="equation" data-tex="$$A\xrightarrow{k_1}B\xrightarrow{k_2}C$$">$$A\xrightarrow{k_1}B\xrightarrow{k_2}C$$</div>
+<p>تغییرات غلظت اجزای A و B از موازنه‌های زیر به دست می‌آید:</p>
+<div class="equation" data-tex="$$\frac{dC_A}{dt}=-k_1C_A$$">$$\frac{dC_A}{dt}=-k_1C_A$$</div>
+<div class="equation" data-tex="$$\frac{dC_B}{dt}=k_1C_A-k_2C_B$$">$$\frac{dC_B}{dt}=k_1C_A-k_2C_B$$</div>
+<div class="equation" data-tex="$$C_A(0)=1.5,\qquad C_B(0)=0$$">$$C_A(0)=1.5,\qquad C_B(0)=0$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+دستگاه را تا <span dir="ltr">t = 8 min</span> با
+<span dir="ltr">h = 0.05 min</span> حل کنید، نمودارهای
+<span dir="ltr">C_A</span> و <span dir="ltr">C_B</span> را رسم کرده و
+بیشینه غلظت B و زمان وقوع آن را محاسبه کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$k_1=0.80\ \mathrm{min^{-1}},\quad k_2=0.25\ \mathrm{min^{-1}}$$">$$k_1=0.80\ \mathrm{min^{-1}},\quad k_2=0.25\ \mathrm{min^{-1}}$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) تعریف بردار حالت</h4>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}C_A\\C_B\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}C_A\\C_B\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}-k_1C_A\\k_1C_A-k_2C_B\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}-k_1C_A\\k_1C_A-k_2C_B\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}1.5\\0\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}1.5\\0\end{bmatrix}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) رابطه بقای ماده برای جزء C</h4>
+<div class="equation" data-tex="$$C_C(t)=C_{A0}-C_A(t)-C_B(t)$$">$$C_C(t)=C_{A0}-C_A(t)-C_B(t)$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) رابطه مورد استفاده در کدنویسی RK4</h4>
+<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="شرط مرزی جابه‌جایی و حل دستگاه خطی بدون عملگر بک‌اسلش" data-tag="BVP / FDM" data-title="مسئله مقدار مرزی: دیواره با تولید حرارت به روش FDM" id="series-2-q2"><div class="problem no-select"><p>
+یک دیواره تخت با تولید یکنواخت حرارت داخلی در حالت پایا در نظر بگیرید.
+سطح چپ در دمای ثابت و سطح راست در تماس جابه‌جایی با محیط است:
+</p><div class="equation" data-tex="$$\frac{d^2T}{dx^2}+\frac{\dot q}{k}=0,\qquad 0\le x\le L$$">$$\frac{d^2T}{dx^2}+\frac{\dot q}{k}=0,\qquad 0\le x\le L$$</div><div class="equation" data-tex="$$T(0)=T_b$$">$$T(0)=T_b$$</div><div class="equation" data-tex="$$-kT'(L)=h_c\left[T(L)-T_{\infty}\right]$$">$$-kT'(L)=h_c\left[T(L)-T_{\infty}\right]$$</div><p>
+<strong>وظیفه کدنویسی:</strong>
+بازه را با <span dir="ltr">h = 0.005 m</span> شبکه‌بندی کنید.
+برای گره‌های داخلی از تفاضل مرکزی و برای مشتق شرط مرزی راست از
+تفاضل پسرو مرتبه اول استفاده کنید. دستگاه
+<span dir="ltr">AT = b</span> را تشکیل دهید و آن را فقط با یکی از
+روش‌های <strong>Gaussian elimination، Gauss–Jordan یا Gauss–Seidel</strong>
+که خودتان در MATLAB پیاده‌سازی می‌کنید حل کنید.
+پروفیل دما و بیشینه دما را گزارش دهید.
+استفاده از <span dir="ltr">A\b</span>، <span dir="ltr">inv</span> و
+<span dir="ltr">linsolve</span> مجاز نیست.
+</p></div><div class="fixed-constants no-select"><strong>داده‌های ثابت این سری</strong><div class="equation" data-tex="$$L=0.04,\quad k=15,\quad \dot q=2.4\times10^5,\quad T_b=360,\quad h_c=80,\quad T_{\infty}=300$$">$$L=0.04,\quad k=15,\quad \dot q=2.4\times10^5,\quad T_b=360,\quad h_c=80,\quad T_{\infty}=300$$</div></div><details class="solution no-select" open=""><summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary><div class="solution-body"><div class="solution-step"><h4>۱) معادله تفاضل محدود گره‌های داخلی</h4><div class="equation" data-tex="$$\frac{T_{i-1}-2T_i+T_{i+1}}{h^2}+\frac{\dot q}{k}=0$$">$$\frac{T_{i-1}-2T_i+T_{i+1}}{h^2}+\frac{\dot q}{k}=0$$</div><div class="equation" data-tex="$$-T_{i-1}+2T_i-T_{i+1}=\frac{\dot q h^2}{k}$$">$$-T_{i-1}+2T_i-T_{i+1}=\frac{\dot q h^2}{k}$$</div></div><div class="solution-step"><h4>۲) شرط دمای معلوم در سطح چپ</h4><div class="equation" data-tex="$$T_0=T_b$$">$$T_0=T_b$$</div><div class="equation" data-tex="$$2T_1-T_2=\frac{\dot q h^2}{k}+T_b$$">$$2T_1-T_2=\frac{\dot q h^2}{k}+T_b$$</div></div><div class="solution-step"><h4>۳) گسسته‌سازی شرط جابه‌جایی سطح راست</h4><div class="equation" data-tex="$$T'(L)\approx\frac{T_N-T_{N-1}}{h}$$">$$T'(L)\approx\frac{T_N-T_{N-1}}{h}$$</div><div class="equation" data-tex="$$-k\frac{T_N-T_{N-1}}{h}=h_c(T_N-T_{\infty})$$">$$-k\frac{T_N-T_{N-1}}{h}=h_c(T_N-T_{\infty})$$</div><div class="equation" data-tex="$$-\frac{k}{h}T_{N-1}+\left(\frac{k}{h}+h_c\right)T_N=h_cT_{\infty}$$">$$-\frac{k}{h}T_{N-1}+\left(\frac{k}{h}+h_c\right)T_N=h_cT_{\infty}$$</div></div><div class="solution-step"><h4>۴) دستگاه مجهولات</h4><div class="equation" data-tex="$$\mathbf{T}=\begin{bmatrix}T_1&amp;T_2&amp;\cdots&amp;T_N\end{bmatrix}^{T}$$">$$\mathbf{T}=\begin{bmatrix}T_1&amp;T_2&amp;\cdots&amp;T_N\end{bmatrix}^{T}$$</div><div class="equation" data-tex="$$\mathbf{A}\mathbf{T}=\mathbf{b}$$">$$\mathbf{A}\mathbf{T}=\mathbf{b}$$</div><p>
+ردیف‌های 1 تا N−1 از معادله تفاضل مرکزی و ردیف N از شرط جابه‌جایی
+ساخته می‌شوند. حل دستگاه باید با یکی از سه الگوریتم خواسته‌شده انجام شود.
+</p></div></div></details></template>
+<template data-subtitle="حل پاسخ گذرای یک دستگاه موازنه جرم" data-tag="IVP" data-title="مسئله مقدار اولیه: اختلاط در دو مخزن سری" id="series-3-q1">
+<div class="problem no-select">
+<p>
+دو مخزن کاملاً مخلوط به صورت سری قرار دارند. محلولی با غلظت ثابت
+<span dir="ltr">C_in</span> وارد مخزن اول شده و جریان خروجی مخزن اول به مخزن دوم می‌رود:
+</p>
+<div class="equation" data-tex="$$V_1\frac{dC_1}{dt}=Q(C_{in}-C_1)$$">$$V_1\frac{dC_1}{dt}=Q(C_{in}-C_1)$$</div>
+<div class="equation" data-tex="$$V_2\frac{dC_2}{dt}=Q(C_1-C_2)$$">$$V_2\frac{dC_2}{dt}=Q(C_1-C_2)$$</div>
+<div class="equation" data-tex="$$C_1(0)=0,\qquad C_2(0)=0$$">$$C_1(0)=0,\qquad C_2(0)=0$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+دستگاه را در بازه <span dir="ltr">0 ≤ t ≤ 40 min</span> با
+<span dir="ltr">h = 0.1 min</span> حل کنید، نمودار هر دو غلظت را رسم کرده و
+اولین زمانی را که <span dir="ltr">C₂ ≥ 4 g/L</span> می‌شود گزارش دهید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$Q=2,\quad V_1=20,\quad V_2=25,\quad C_{in}=5$$">$$Q=2,\quad V_1=20,\quad V_2=25,\quad C_{in}=5$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) تبدیل موازنه‌ها به فرم استاندارد</h4>
+<div class="equation" data-tex="$$\frac{dC_1}{dt}=\frac{Q}{V_1}(C_{in}-C_1)$$">$$\frac{dC_1}{dt}=\frac{Q}{V_1}(C_{in}-C_1)$$</div><div class="equation" data-tex="$$\frac{dC_2}{dt}=\frac{Q}{V_2}(C_1-C_2)$$">$$\frac{dC_2}{dt}=\frac{Q}{V_2}(C_1-C_2)$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) تعریف بردار حالت</h4>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}C_1\\C_2\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}C_1\\C_2\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}\frac{Q}{V_1}(C_{in}-C_1)\\\frac{Q}{V_2}(C_1-C_2)\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}\frac{Q}{V_1}(C_{in}-C_1)\\\frac{Q}{V_2}(C_1-C_2)\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) رابطه مورد استفاده در کدنویسی RK4</h4>
+<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="شرط تقارن، شرط فیلم خارجی و دستگاه سه‌قطری" data-tag="BVP / FDM" data-title="مسئله مقدار مرزی: نفوذ و واکنش در تیغه کاتالیستی با FDM" id="series-3-q2"><div class="problem no-select"><p>
+در یک تیغه متخلخل کاتالیستی، نفوذ و واکنش مرتبه اول در حالت پایا برقرار است.
+مرکز تیغه دارای تقارن و سطح خارجی در تماس با فیلم انتقال جرم است:
+</p><div class="equation" data-tex="$$D_e\frac{d^2C}{dx^2}-k_rC=0,\qquad 0\le x\le L$$">$$D_e\frac{d^2C}{dx^2}-k_rC=0,\qquad 0\le x\le L$$</div><div class="equation" data-tex="$$C'(0)=0$$">$$C'(0)=0$$</div><div class="equation" data-tex="$$D_eC'(L)=k_g\left[C_b-C(L)\right]$$">$$D_eC'(L)=k_g\left[C_b-C(L)\right]$$</div><p>
+<strong>وظیفه کدنویسی:</strong>
+از <span dir="ltr">h = 0.0005 m</span> استفاده کنید.
+برای مرکز تیغه شرط تقارن را با گره مجازی و برای سطح خارجی مشتق را با
+تفاضل پسرو مرتبه اول اعمال کنید. دستگاه خطی را تشکیل داده و آن را
+<strong>فقط با یکی از روش‌های Gaussian elimination، Gauss–Jordan یا
+Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
+توزیع غلظت و شار سطح خارجی را رسم یا گزارش کنید.
+استفاده از <span dir="ltr">A\b</span>، <span dir="ltr">inv</span> و
+<span dir="ltr">linsolve</span> مجاز نیست.
+</p></div><div class="fixed-constants no-select"><strong>داده‌های ثابت این سری</strong><div class="equation" data-tex="$$L=0.005,\quad D_e=1.2\times10^{-9},\quad k_r=2.0\times10^{-4},\quad k_g=2.5\times10^{-5},\quad C_b=2$$">$$L=0.005,\quad D_e=1.2\times10^{-9},\quad k_r=2.0\times10^{-4},\quad k_g=2.5\times10^{-5},\quad C_b=2$$</div></div><details class="solution no-select" open=""><summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary><div class="solution-body"><div class="solution-step"><h4>۱) معادله گره‌های داخلی</h4><div class="equation" data-tex="$$\lambda^2=\frac{k_r}{D_e}$$">$$\lambda^2=\frac{k_r}{D_e}$$</div><div class="equation" data-tex="$$\frac{C_{i-1}-2C_i+C_{i+1}}{h^2}-\lambda^2C_i=0$$">$$\frac{C_{i-1}-2C_i+C_{i+1}}{h^2}-\lambda^2C_i=0$$</div><div class="equation" data-tex="$$-C_{i-1}+\left(2+\lambda^2h^2\right)C_i-C_{i+1}=0$$">$$-C_{i-1}+\left(2+\lambda^2h^2\right)C_i-C_{i+1}=0$$</div></div><div class="solution-step"><h4>۲) اعمال شرط تقارن با گره مجازی</h4><div class="equation" data-tex="$$C'(0)\approx\frac{C_1-C_{-1}}{2h}=0$$">$$C'(0)\approx\frac{C_1-C_{-1}}{2h}=0$$</div><div class="equation" data-tex="$$C_{-1}=C_1$$">$$C_{-1}=C_1$$</div><div class="equation" data-tex="$$\frac{C_{-1}-2C_0+C_1}{h^2}-\lambda^2C_0=0$$">$$\frac{C_{-1}-2C_0+C_1}{h^2}-\lambda^2C_0=0$$</div><div class="equation" data-tex="$$\left(2+\lambda^2h^2\right)C_0-2C_1=0$$">$$\left(2+\lambda^2h^2\right)C_0-2C_1=0$$</div></div><div class="solution-step"><h4>۳) شرط فیلم در سطح خارجی</h4><div class="equation" data-tex="$$C'(L)\approx\frac{C_N-C_{N-1}}{h}$$">$$C'(L)\approx\frac{C_N-C_{N-1}}{h}$$</div><div class="equation" data-tex="$$D_e\frac{C_N-C_{N-1}}{h}=k_g(C_b-C_N)$$">$$D_e\frac{C_N-C_{N-1}}{h}=k_g(C_b-C_N)$$</div><div class="equation" data-tex="$$-\frac{D_e}{h}C_{N-1}+\left(\frac{D_e}{h}+k_g\right)C_N=k_gC_b$$">$$-\frac{D_e}{h}C_{N-1}+\left(\frac{D_e}{h}+k_g\right)C_N=k_gC_b$$</div></div><div class="solution-step"><h4>۴) بردار مجهولات و شار خارجی</h4><div class="equation" data-tex="$$\mathbf{C}=\begin{bmatrix}C_0&amp;C_1&amp;\cdots&amp;C_N\end{bmatrix}^{T}$$">$$\mathbf{C}=\begin{bmatrix}C_0&amp;C_1&amp;\cdots&amp;C_N\end{bmatrix}^{T}$$</div><div class="equation" data-tex="$$\mathbf{A}\mathbf{C}=\mathbf{b}$$">$$\mathbf{A}\mathbf{C}=\mathbf{b}$$</div><div class="equation" data-tex="$$N_A=-D_e\left.\frac{dC}{dx}\right|_{x=L}\approx-D_e\frac{C_N-C_{N-1}}{h}$$">$$N_A=-D_e\left.\frac{dC}{dx}\right|_{x=L}\approx-D_e\frac{C_N-C_{N-1}}{h}$$</div></div></div></details></template>
+<template data-subtitle="مدل حرکت مرتبه دوم و سرعت حدی" data-tag="IVP" data-title="مسئله مقدار اولیه: سقوط ذره با مقاومت غیرخطی" id="series-4-q1">
+<div class="problem no-select">
+<p>
+یک ذره کروی در سیالی ساکن سقوط می‌کند. نیروی مقاومت متناسب با
+<span dir="ltr">v|v|</span> در نظر گرفته شده و محور رو به پایین مثبت است:
+</p>
+<div class="equation" data-tex="$$\frac{dz}{dt}=v$$">$$\frac{dz}{dt}=v$$</div>
+<div class="equation" data-tex="$$\frac{dv}{dt}=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|$$">$$\frac{dv}{dt}=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|$$</div>
+<div class="equation" data-tex="$$z(0)=0,\qquad v(0)=0$$">$$z(0)=0,\qquad v(0)=0$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+حرکت را تا <span dir="ltr">t = 5 s</span> با
+<span dir="ltr">h = 0.01 s</span> حل کنید. نمودارهای سرعت و موقعیت را رسم کرده و
+سرعت حدی نظری را با سرعت عددی انتهای بازه مقایسه کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$g=9.81,\quad \rho_p=2500,\quad \rho_f=1000,\quad c_d=0.18$$">$$g=9.81,\quad \rho_p=2500,\quad \rho_f=1000,\quad c_d=0.18$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) بردار حالت</h4>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}z\\v\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}z\\v\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}v\\g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}v\\g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv|v|\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}0\\0\end{bmatrix}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) سرعت حدی نظری</h4>
+<div class="equation" data-tex="$$0=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv_t^2$$">$$0=g\left(1-\frac{\rho_f}{\rho_p}\right)-c_dv_t^2$$</div><div class="equation" data-tex="$$v_t=\sqrt{\frac{g\left(1-\rho_f/\rho_p\right)}{c_d}}$$">$$v_t=\sqrt{\frac{g\left(1-\rho_f/\rho_p\right)}{c_d}}$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) رابطه مورد استفاده در کدنویسی RK4</h4>
+<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="تولید حرارت و شرط جابه‌جایی در سطح خارجی" data-tag="BVP" data-title="مسئله مقدار مرزی: هدایت شعاعی در استوانه توخالی" id="series-4-q2">
+<div class="problem no-select">
+<p>
+در یک استوانه توخالی با تولید یکنواخت حرارت، توزیع دمای شعاعی پایا از معادله زیر پیروی می‌کند:
+</p>
+<div class="equation" data-tex="$$\frac{1}{r}\frac{d}{dr}\left(r\frac{dT}{dr}\right)+\frac{\dot q}{k}=0$$">$$\frac{1}{r}\frac{d}{dr}\left(r\frac{dT}{dr}\right)+\frac{\dot q}{k}=0$$</div>
+<div class="equation" data-tex="$$T(r_i)=T_i$$">$$T(r_i)=T_i$$</div>
+<div class="equation" data-tex="$$-kT'(r_o)=h_c\left[T(r_o)-T_\infty\right]$$">$$-kT'(r_o)=h_c\left[T(r_o)-T_\infty\right]$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+مسئله را در بازه <span dir="ltr">r_i ≤ r ≤ r_o</span> با
+<span dir="ltr">hᵣ = 0.0002 m</span> و روش پرتابی حل کنید.
+برای شیب اولیه از حدس‌های <span dir="ltr">s₀ = −5000</span> و
+<span dir="ltr">s₁ = 0 K/m</span> استفاده کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$r_i=0.01,\ r_o=0.03,\ k=12,\ \dot q=10^5,\ T_i=380,\ h_c=100,\ T_\infty=300$$">$$r_i=0.01,\ r_o=0.03,\ k=12,\ \dot q=10^5,\ T_i=380,\ h_c=100,\ T_\infty=300$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) بسط معادله شعاعی</h4>
+<div class="equation" data-tex="$$T''+\frac{1}{r}T'+\frac{\dot q}{k}=0$$">$$T''+\frac{1}{r}T'+\frac{\dot q}{k}=0$$</div><div class="equation" data-tex="$$T''=-\frac{T'}{r}-\frac{\dot q}{k}$$">$$T''=-\frac{T'}{r}-\frac{\dot q}{k}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) دستگاه و شیب مجهول</h4>
+<div class="equation" data-tex="$$y_1=T,\qquad y_2=T'$$">$$y_1=T,\qquad y_2=T'$$</div><div class="equation" data-tex="$$y_1'=y_2,\qquad y_2'=-\frac{y_2}{r}-\frac{\dot q}{k}$$">$$y_1'=y_2,\qquad y_2'=-\frac{y_2}{r}-\frac{\dot q}{k}$$</div><div class="equation" data-tex="$$s=T'(r_i)$$">$$s=T'(r_i)$$</div><div class="equation" data-tex="$$y_1(r_i)=T_i,\qquad y_2(r_i)=s$$">$$y_1(r_i)=T_i,\qquad y_2(r_i)=s$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) باقیمانده سطح خارجی</h4>
+<div class="equation" data-tex="$$F(s)=-ky_2(r_o;s)-h_c\left[y_1(r_o;s)-T_\infty\right]$$">$$F(s)=-ky_2(r_o;s)-h_c\left[y_1(r_o;s)-T_\infty\right]$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
+</div>
+<div class="solution-step">
+<h4>۴) اصلاح حدس</h4>
+<div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="دستگاه غیرخطی مایکلـیس–منتن" data-tag="IVP" data-title="مسئله مقدار اولیه: واکنش آنزیمی و تجزیه محصول" id="series-5-q1">
+<div class="problem no-select">
+<p>
+در یک واکنش آنزیمی ناپیوسته، سوبسترا با سینتیک مایکلـیس–منتن مصرف می‌شود.
+محصول نیز هم‌زمان با یک واکنش مرتبه اول تجزیه می‌شود:
+</p>
+<div class="equation" data-tex="$$\frac{dS}{dt}=-\frac{V_{\max}S}{K_m+S}$$">$$\frac{dS}{dt}=-\frac{V_{\max}S}{K_m+S}$$</div>
+<div class="equation" data-tex="$$\frac{dP}{dt}=\frac{V_{\max}S}{K_m+S}-k_dP$$">$$\frac{dP}{dt}=\frac{V_{\max}S}{K_m+S}-k_dP$$</div>
+<div class="equation" data-tex="$$S(0)=10,\qquad P(0)=0$$">$$S(0)=10,\qquad P(0)=0$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+دستگاه را تا <span dir="ltr">t = 20 min</span> با
+<span dir="ltr">h = 0.02 min</span> حل کنید. نمودارهای S و P را رسم کرده و
+بیشینه P و زمان وقوع آن را تعیین کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$V_{\max}=1.2,\quad K_m=2.5,\quad k_d=0.08$$">$$V_{\max}=1.2,\quad K_m=2.5,\quad k_d=0.08$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) نرخ واکنش آنزیمی</h4>
+<div class="equation" data-tex="$$r(S)=\frac{V_{\max}S}{K_m+S}$$">$$r(S)=\frac{V_{\max}S}{K_m+S}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) دستگاه برداری</h4>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}S\\P\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}S\\P\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}-r(S)\\r(S)-k_dP\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}-r(S)\\r(S)-k_dP\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}10\\0\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}10\\0\end{bmatrix}$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) رابطه مورد استفاده در کدنویسی RK4</h4>
+<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="شرایط دانکورتس و روش پرتابی" data-tag="BVP" data-title="مسئله مقدار مرزی: واکنشگاه با پخش محوری" id="series-5-q2">
+<div class="problem no-select">
+<p>
+در یک واکنشگاه لوله‌ای با پخش محوری، غلظت پایای ماده A از مدل زیر پیروی می‌کند:
+</p>
+<div class="equation" data-tex="$$D_{ax}\frac{d^2C}{dz^2}-u\frac{dC}{dz}-k_rC=0$$">$$D_{ax}\frac{d^2C}{dz^2}-u\frac{dC}{dz}-k_rC=0$$</div>
+<p>شرایط مرزی دانکورتس در ورودی و شرط گرادیان صفر در خروجی عبارت‌اند از:</p>
+<div class="equation" data-tex="$$D_{ax}C'(0)=u\left[C(0)-C_{in}\right]$$">$$D_{ax}C'(0)=u\left[C(0)-C_{in}\right]$$</div>
+<div class="equation" data-tex="$$C'(L)=0$$">$$C'(L)=0$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+غلظت مجهول ورودی داخل واکنشگاه را با روش پرتابی پیدا کنید.
+از <span dir="ltr">h_z = 0.005 m</span>، حدس‌های
+<span dir="ltr">s₀ = 0.2</span> و <span dir="ltr">s₁ = 0.95</span>
+و معیار <span dir="ltr">10⁻⁸</span> استفاده کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$L=1.2,\quad D_{ax}=0.02,\quad u=0.15,\quad k_r=0.08,\quad C_{in}=1$$">$$L=1.2,\quad D_{ax}=0.02,\quad u=0.15,\quad k_r=0.08,\quad C_{in}=1$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) دستگاه مرتبه اول</h4>
+<div class="equation" data-tex="$$y_1=C,\qquad y_2=C'$$">$$y_1=C,\qquad y_2=C'$$</div><div class="equation" data-tex="$$y_1'=y_2$$">$$y_1'=y_2$$</div><div class="equation" data-tex="$$y_2'=\frac{uy_2+k_ry_1}{D_{ax}}$$">$$y_2'=\frac{uy_2+k_ry_1}{D_{ax}}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) پارامتر پرتاب و شرط اولیه وابسته</h4>
+<div class="equation" data-tex="$$s=C(0)$$">$$s=C(0)$$</div><div class="equation" data-tex="$$y_1(0)=s$$">$$y_1(0)=s$$</div><div class="equation" data-tex="$$y_2(0)=\frac{u}{D_{ax}}\left(s-C_{in}\right)$$">$$y_2(0)=\frac{u}{D_{ax}}\left(s-C_{in}\right)$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) باقیمانده خروجی</h4>
+<div class="equation" data-tex="$$F(s)=y_2(L;s)$$">$$F(s)=y_2(L;s)$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
+</div>
+<div class="solution-step">
+<h4>۴) اصلاح مقدار s با سکانت</h4>
+<div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="حل دستگاه خطی و کنترل بقای ماده" data-tag="IVP" data-title="مسئله مقدار اولیه: واکنش برگشت‌پذیر ناپیوسته" id="series-6-q1">
+<div class="problem no-select">
+<p>
+واکنش برگشت‌پذیر مرتبه اول <span dir="ltr">A ⇌ B</span> در یک واکنشگاه ناپیوسته انجام می‌شود:
+</p>
+<div class="equation" data-tex="$$A\mathop{\rightleftharpoons}^{k_f}_{k_r}B$$">$$A\mathop{\rightleftharpoons}^{k_f}_{k_r}B$$</div>
+<div class="equation" data-tex="$$\frac{dC_A}{dt}=-k_fC_A+k_rC_B$$">$$\frac{dC_A}{dt}=-k_fC_A+k_rC_B$$</div>
+<div class="equation" data-tex="$$\frac{dC_B}{dt}=k_fC_A-k_rC_B$$">$$\frac{dC_B}{dt}=k_fC_A-k_rC_B$$</div>
+<div class="equation" data-tex="$$C_A(0)=2.0,\qquad C_B(0)=0.2$$">$$C_A(0)=2.0,\qquad C_B(0)=0.2$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+دستگاه را تا <span dir="ltr">t = 10 min</span> با
+<span dir="ltr">h = 0.02 min</span> حل کنید.
+غلظت‌ها را رسم کرده و بقای <span dir="ltr">C_A+C_B</span> را در تمام گام‌ها بررسی کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$k_f=0.65\ \mathrm{min^{-1}},\qquad k_r=0.18\ \mathrm{min^{-1}}$$">$$k_f=0.65\ \mathrm{min^{-1}},\qquad k_r=0.18\ \mathrm{min^{-1}}$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) بردار حالت</h4>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}C_A\\C_B\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}C_A\\C_B\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}-k_fC_A+k_rC_B\\k_fC_A-k_rC_B\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}-k_fC_A+k_rC_B\\k_fC_A-k_rC_B\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}2.0\\0.2\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}2.0\\0.2\end{bmatrix}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) رابطه بقای غلظت کل</h4>
+<div class="equation" data-tex="$$\frac{d}{dt}(C_A+C_B)=0$$">$$\frac{d}{dt}(C_A+C_B)=0$$</div><div class="equation" data-tex="$$C_A(t)+C_B(t)=2.2$$">$$C_A(t)+C_B(t)=2.2$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) نسبت تعادلی</h4>
+<div class="equation" data-tex="$$k_fC_{A,e}=k_rC_{B,e}$$">$$k_fC_{A,e}=k_rC_{B,e}$$</div><div class="equation" data-tex="$$\frac{C_{B,e}}{C_{A,e}}=\frac{k_f}{k_r}$$">$$\frac{C_{B,e}}{C_{A,e}}=\frac{k_f}{k_r}$$</div>
+</div>
+<div class="solution-step">
+<h4>۴) رابطه مورد استفاده در کدنویسی RK4</h4>
+<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="هندسه شعاعی، واکنش و مقاومت فیلم" data-tag="BVP" data-title="مسئله مقدار مرزی: نفوذ در پوسته کاتالیستی استوانه‌ای" id="series-6-q2">
+<div class="problem no-select">
+<p>
+در یک پوسته کاتالیستی استوانه‌ای توخالی، نفوذ شعاعی و واکنش مرتبه اول در حالت پایا برقرار است:
+</p>
+<div class="equation" data-tex="$$\frac{d^2C}{dr^2}+\frac{1}{r}\frac{dC}{dr}-\frac{k_r}{D_e}C=0$$">$$\frac{d^2C}{dr^2}+\frac{1}{r}\frac{dC}{dr}-\frac{k_r}{D_e}C=0$$</div>
+<div class="equation" data-tex="$$C'(r_i)=0$$">$$C'(r_i)=0$$</div>
+<div class="equation" data-tex="$$D_eC'(r_o)=k_g\left[C_b-C(r_o)\right]$$">$$D_eC'(r_o)=k_g\left[C_b-C(r_o)\right]$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+غلظت مرز داخلی را به‌عنوان پارامتر پرتاب در نظر بگیرید.
+از <span dir="ltr">hᵣ = 5×10⁻⁵ m</span> و حدس‌های
+<span dir="ltr">s₀ = 0.1</span> و <span dir="ltr">s₁ = 2.0 mol/m³</span>
+استفاده کرده و توزیع غلظت را رسم کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$r_i=0.002,\ r_o=0.008,\ D_e=1.0\times10^{-9},\ k_r=1.5\times10^{-4},\ k_g=2.0\times10^{-5},\ C_b=2$$">$$r_i=0.002,\ r_o=0.008,\ D_e=1.0\times10^{-9},\ k_r=1.5\times10^{-4},\ k_g=2.0\times10^{-5},\ C_b=2$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) دستگاه مرتبه اول</h4>
+<div class="equation" data-tex="$$y_1=C,\qquad y_2=C'$$">$$y_1=C,\qquad y_2=C'$$</div><div class="equation" data-tex="$$y_1'=y_2$$">$$y_1'=y_2$$</div><div class="equation" data-tex="$$y_2'=\frac{k_r}{D_e}y_1-\frac{y_2}{r}$$">$$y_2'=\frac{k_r}{D_e}y_1-\frac{y_2}{r}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) شرایط اولیه پرتاب</h4>
+<div class="equation" data-tex="$$s=C(r_i)$$">$$s=C(r_i)$$</div><div class="equation" data-tex="$$y_1(r_i)=s,\qquad y_2(r_i)=0$$">$$y_1(r_i)=s,\qquad y_2(r_i)=0$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) باقیمانده انتقال جرم سطح خارجی</h4>
+<div class="equation" data-tex="$$F(s)=D_ey_2(r_o;s)-k_g\left[C_b-y_1(r_o;s)\right]$$">$$F(s)=D_ey_2(r_o;s)-k_g\left[C_b-y_1(r_o;s)\right]$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
+</div>
+<div class="solution-step">
+<h4>۴) فرمول سکانت</h4>
+<div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="حجم متغیر و دستگاه غیرخطی وابسته به زمان" data-tag="IVP" data-title="مسئله مقدار اولیه: واکنشگاه نیمه‌ناپیوسته" id="series-7-q1">
+<div class="problem no-select">
+<p>
+در یک واکنشگاه نیمه‌ناپیوسته، خوراک حاوی A با دبی ثابت وارد مخزنی می‌شود که در ابتدا حاوی B است.
+واکنش <span dir="ltr">A+B→P</span> انجام می‌شود و حجم با زمان افزایش می‌یابد:
+</p>
+<div class="equation" data-tex="$$V(t)=V_0+Ft$$">$$V(t)=V_0+Ft$$</div>
+<div class="equation" data-tex="$$\frac{dC_A}{dt}=\frac{F}{V(t)}(C_{Af}-C_A)-kC_AC_B$$">$$\frac{dC_A}{dt}=\frac{F}{V(t)}(C_{Af}-C_A)-kC_AC_B$$</div>
+<div class="equation" data-tex="$$\frac{dC_B}{dt}=-kC_AC_B-\frac{F}{V(t)}C_B$$">$$\frac{dC_B}{dt}=-kC_AC_B-\frac{F}{V(t)}C_B$$</div>
+<div class="equation" data-tex="$$C_A(0)=0,\qquad C_B(0)=1.5$$">$$C_A(0)=0,\qquad C_B(0)=1.5$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+دستگاه غیرخودمختار را تا <span dir="ltr">t = 20 min</span> با
+<span dir="ltr">h = 0.02 min</span> حل کنید و نمودار غلظت‌های A و B را رسم کنید.
+همچنین زمان کمینه شدن B را گزارش دهید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$V_0=10,\quad F=0.5,\quad C_{Af}=2.0,\quad k=0.15$$">$$V_0=10,\quad F=0.5,\quad C_{Af}=2.0,\quad k=0.15$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) تعریف حجم متغیر</h4>
+<div class="equation" data-tex="$$V(t)=V_0+Ft$$">$$V(t)=V_0+Ft$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) دستگاه برداری وابسته به زمان</h4>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}C_A\\C_B\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}C_A\\C_B\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}'=\begin{bmatrix}\frac{F}{V_0+Ft}(C_{Af}-C_A)-kC_AC_B\\-kC_AC_B-\frac{F}{V_0+Ft}C_B\end{bmatrix}$$">$$\mathbf{Y}'=\begin{bmatrix}\frac{F}{V_0+Ft}(C_{Af}-C_A)-kC_AC_B\\-kC_AC_B-\frac{F}{V_0+Ft}C_B\end{bmatrix}$$</div><div class="equation" data-tex="$$\mathbf{Y}(0)=\begin{bmatrix}0\\1.5\end{bmatrix}$$">$$\mathbf{Y}(0)=\begin{bmatrix}0\\1.5\end{bmatrix}$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) توجه در مراحل میانی RK4</h4>
+<p>در محاسبه k₂ و k₃ باید حجم در زمان <span dir="ltr">tₙ+h/2</span> و در k₄ حجم در زمان <span dir="ltr">tₙ+h</span> محاسبه شود.</p>
+</div>
+<div class="solution-step">
+<h4>۴) رابطه مورد استفاده در کدنویسی RK4</h4>
+<div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
+</div>
+</div>
+</details>
+</template>
+<template data-subtitle="روش پرتابی برای یک معادله غیرخطی" data-tag="BVP" data-title="مسئله مقدار مرزی: هدایت غیرخطی با رسانندگی متغیر" id="series-7-q2">
+<div class="problem no-select">
+<p>
+در یک دیواره تخت، رسانندگی حرارتی بی‌بعد با دما تغییر می‌کند و تولید حرارت یکنواخت وجود دارد:
+</p>
+<div class="equation" data-tex="$$\frac{d}{dx}\left[(1+\alpha\theta)\frac{d\theta}{dx}\right]+Q=0$$">$$\frac{d}{dx}\left[(1+\alpha\theta)\frac{d\theta}{dx}\right]+Q=0$$</div>
+<div class="equation" data-tex="$$\theta(0)=1$$">$$\theta(0)=1$$</div>
+<div class="equation" data-tex="$$-\left[1+\alpha\theta(1)\right]\theta'(1)=Bi\,\theta(1)$$">$$-\left[1+\alpha\theta(1)\right]\theta'(1)=Bi\,\theta(1)$$</div>
+<p>
+<strong>وظیفه کدنویسی:</strong>
+این مسئله غیرخطی را با روش پرتابی، RK4 و سکانت حل کنید.
+از <span dir="ltr">hₓ = 0.01</span>، حدس‌های
+<span dir="ltr">s₀ = −0.1</span> و <span dir="ltr">s₁ = −2.0</span>
+و معیار <span dir="ltr">|F| &lt; 10⁻⁸</span> استفاده کنید.
+</p>
+</div>
+<div class="fixed-constants no-select">
+<strong>داده‌های ثابت این سری</strong>
+<div class="equation" data-tex="$$\alpha=0.40,\qquad Q=1.20,\qquad Bi=0.80$$">$$\alpha=0.40,\qquad Q=1.20,\qquad Bi=0.80$$</div>
+</div>
+<details class="solution no-select" open="">
+<summary>پاسخ کامل بخش دست‌نویس ـ این پاسخ در اختیار دانشجو است</summary>
+<div class="solution-body">
+<div class="solution-step">
+<h4>۱) بسط مشتق</h4>
+<div class="equation" data-tex="$$(1+\alpha\theta)\theta''+\alpha(\theta')^2+Q=0$$">$$(1+\alpha\theta)\theta''+\alpha(\theta')^2+Q=0$$</div><div class="equation" data-tex="$$\theta''=-\frac{\alpha(\theta')^2+Q}{1+\alpha\theta}$$">$$\theta''=-\frac{\alpha(\theta')^2+Q}{1+\alpha\theta}$$</div>
+</div>
+<div class="solution-step">
+<h4>۲) دستگاه غیرخطی مرتبه اول</h4>
+<div class="equation" data-tex="$$y_1=\theta,\qquad y_2=\theta'$$">$$y_1=\theta,\qquad y_2=\theta'$$</div><div class="equation" data-tex="$$y_1'=y_2$$">$$y_1'=y_2$$</div><div class="equation" data-tex="$$y_2'=-\frac{\alpha y_2^2+Q}{1+\alpha y_1}$$">$$y_2'=-\frac{\alpha y_2^2+Q}{1+\alpha y_1}$$</div>
+</div>
+<div class="solution-step">
+<h4>۳) شیب مجهول و باقیمانده</h4>
+<div class="equation" data-tex="$$s=\theta'(0)$$">$$s=\theta'(0)$$</div><div class="equation" data-tex="$$y_1(0)=1,\qquad y_2(0)=s$$">$$y_1(0)=1,\qquad y_2(0)=s$$</div><div class="equation" data-tex="$$F(s)=-\left[1+\alpha y_1(1;s)\right]y_2(1;s)-Bi\,y_1(1;s)$$">$$F(s)=-\left[1+\alpha y_1(1;s)\right]y_2(1;s)-Bi\,y_1(1;s)$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
+</div>
+<div class="solution-step">
+<h4>۴) اصلاح شیب با سکانت</h4>
+<div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
+</div>
+</div>
+</details>
+</template>
+</div><script>
+    "use strict";
+
+    /*
+     * تنظیمات قابل ویرایش توسط استاد
+     */
+    const CONFIG = {
+      STORAGE_KEY: "matlabExamAll7SeriesFaV2",
+      DURATION_MS: 2 * 60 * 60 * 1000,
+      REQUIRE_OFFLINE: false,
+      REQUIRE_FULLSCREEN: true,
+      TEHRAN_TIME_ZONE: "Asia/Tehran",
+      EXAM_OPEN_MINUTE: 9 * 60,
+      EXAM_CLOSE_MINUTE: 24 * 60,
+      RETAKE_PASSWORD: "retakematlabexam",
+    };
+
+    const SERIES_META = [
+      {label:"سری اول",  slot:"۰۹:۰۰ تا ۱۱:۰۰"},
+      {label:"سری دوم",  slot:"۱۱:۰۰ تا ۱۳:۰۰"},
+      {label:"سری سوم",  slot:"۱۳:۰۰ تا ۱۵:۰۰"},
+      {label:"سری چهارم",slot:"۱۵:۰۰ تا ۱۷:۰۰"},
+      {label:"سری پنجم", slot:"۱۷:۰۰ تا ۱۹:۰۰"},
+      {label:"سری ششم", slot:"۱۹:۰۰ تا ۲۱:۰۰"},
+      {label:"سری هفتم",slot:"۲۱:۰۰ تا ۲۴:۰۰"}
+    ];
+
+    const $ = selector => document.querySelector(selector);
+    const $$ = selector => [...document.querySelectorAll(selector)];
+
+    const startPage = $("#startPage");
+    const examPage = $("#examPage");
+    const lockedPage = $("#lockedPage");
+    const browserBlockedPage = $("#browserBlockedPage");
+    const overlay = $("#integrityOverlay");
+    const ORIGINAL_TITLE = document.title;
+
+    const editors = [$("#codeQ1"), $("#codeQ2")];
+
+    let timerHandle = null;
+    let saveClockHandle = null;
+    let lastIncidentAt = 0;
+    let internalFullscreenExit = false;
+
+    function freshState(){
+      return {
+        fullName:"",
+        studentId:"",
+        pledge:false,
+        status:"not-started",
+        startedAt:null,
+        deadline:null,
+        finishedAt:null,
+        lastSeenAt:null,
+        attemptCode:"",
+        seriesIndex:null,
+        seriesLabel:"",
+        seriesSlot:"",
+        code:{q1:"",q2:""},
+        fields:{},
+        violations:[]
+      };
+    }
+
+    function loadState(){
+      try{
+        const parsed = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || "null");
+        if(!parsed) return freshState();
+        return {
+          ...freshState(),
+          ...parsed,
+          code:{...freshState().code,...(parsed.code||{})},
+          fields:{...(parsed.fields||{})},
+          violations:Array.isArray(parsed.violations)?parsed.violations:[]
+        };
+      }catch(error){
+        console.error(error);
+        return freshState();
+      }
+    }
+
+    let state = loadState();
+
+    function saveState(){
+      localStorage.setItem(CONFIG.STORAGE_KEY,JSON.stringify(state));
+    }
+
+    function toFaDigits(value){
+      return String(value).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]);
+    }
+
+    function formatDate(timestamp){
+      if(!timestamp) return "ثبت نشده";
+      return new Intl.DateTimeFormat("fa-IR",{
+        year:"numeric",month:"2-digit",day:"2-digit",
+        hour:"2-digit",minute:"2-digit",second:"2-digit"
+      }).format(new Date(timestamp));
+    }
+
+    function makeAttemptCode(){
+      const now = Date.now().toString(36).toUpperCase();
+      const rand = Math.random().toString(36).slice(2,7).toUpperCase();
+      const number = Number.isInteger(state.seriesIndex) ? state.seriesIndex + 1 : 0;
+      return `S${number}-${now}-${rand}`;
+    }
+
+    function showOnly(name){
+      startPage.hidden = name !== "start";
+      examPage.hidden = name !== "exam";
+      lockedPage.hidden = name !== "locked";
+      browserBlockedPage.hidden = name !== "browser-blocked";
+    }
+
+    function isGoogleChrome(){
+      if(navigator.userAgentData && Array.isArray(navigator.userAgentData.brands)){
+        return navigator.userAgentData.brands.some(item => item.brand === "Google Chrome");
+      }
+
+      const ua = navigator.userAgent;
+      return /Chrome\/\d+/.test(ua) &&
+        !/Edg\/|OPR\/|Opera|SamsungBrowser|CriOS/.test(ua);
+    }
+
+    function updateNetworkStatus(){
+      return true;
+    }
+
+    async function requestExamFullscreen(){
+      if(!CONFIG.REQUIRE_FULLSCREEN) return true;
+      if(document.fullscreenElement) return true;
+
+      try{
+        await document.documentElement.requestFullscreen();
+        return Boolean(document.fullscreenElement);
+      }catch(error){
+        console.error(error);
+        return false;
+      }
+    }
+
+    function getTehranClockParts(date=new Date()){
+      const formatter = new Intl.DateTimeFormat("en-GB",{
+        timeZone:CONFIG.TEHRAN_TIME_ZONE,
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit",
+        hourCycle:"h23"
+      });
+
+      const parts = Object.fromEntries(
+        formatter.formatToParts(date)
+          .filter(part=>part.type!=="literal")
+          .map(part=>[part.type,part.value])
+      );
+
+      return {
+        hour:Number(parts.hour),
+        minute:Number(parts.minute),
+        second:Number(parts.second)
+      };
+    }
+
+    function getTehranMinuteOfDay(date=new Date()){
+      const parts=getTehranClockParts(date);
+      return parts.hour*60+parts.minute;
+    }
+
+    function formatTehranClock(date=new Date()){
+      const parts=getTehranClockParts(date);
+      return `${String(parts.hour).padStart(2,"0")}:` +
+             `${String(parts.minute).padStart(2,"0")}:` +
+             `${String(parts.second).padStart(2,"0")}`;
+    }
+
+    function isExamWindowOpen(date=new Date()){
+      const minute=getTehranMinuteOfDay(date);
+      return minute>=CONFIG.EXAM_OPEN_MINUTE &&
+             minute<CONFIG.EXAM_CLOSE_MINUTE;
+    }
+
+    function getSeriesIndex(date=new Date()){
+      const minute=getTehranMinuteOfDay(date);
+
+      if(minute<CONFIG.EXAM_OPEN_MINUTE ||
+         minute>=CONFIG.EXAM_CLOSE_MINUTE){
+        return null;
+      }
+
+      return Math.min(
+        6,
+        Math.floor((minute-CONFIG.EXAM_OPEN_MINUTE)/120)
+      );
+    }
+
+    function updateAvailability(){
+      const notice=$("#availabilityNotice");
+      if(!notice) return;
+
+      const open=isExamWindowOpen();
+      const clock=formatTehranClock();
+      notice.classList.toggle("closed",!open);
+
+      if(open){
+        const index=getSeriesIndex();
+        notice.innerHTML=
+          `<strong>آزمون قابل شروع است.</strong> ` +
+          `ساعت تهران: ${toFaDigits(clock)} ـ ` +
+          `مجموعه تخصیص‌یافته در صورت شروع اکنون: ` +
+          `${SERIES_META[index].label} (${SERIES_META[index].slot})`;
+      }else{
+        notice.innerHTML=
+          `<strong>زمان شروع آزمون بسته است.</strong> ` +
+          `ساعت تهران: ${toFaDigits(clock)} ـ ` +
+          `شروع آزمون هر روز از ساعت ۰۹:۰۰ تا ۲۴:۰۰ تهران امکان‌پذیر است.`;
+      }
+
+      if(state.status==="not-started"){
+        $("#startButton").disabled=!open;
+      }
+    }
+
+    function renderSeries(index){
+      const safeIndex=Number.isInteger(index) && SERIES_META[index] ? index : 0;
+      const seriesNumber=safeIndex+1;
+
+      for(let q=1;q<=2;q++){
+        const template=$(`#series-${seriesNumber}-q${q}`);
+        const target=$(`#q${q}Dynamic`);
+
+        if(!template || !target) continue;
+
+        target.replaceChildren(template.content.cloneNode(true));
+        $(`#q${q}Title`).textContent=template.dataset.title;
+        $(`#q${q}Subtitle`).textContent=template.dataset.subtitle;
+        $(`#q${q}Tag`).textContent=template.dataset.tag;
+        const questionType = q===1
+          ? "ivp"
+          : (seriesNumber<=3 ? "bvp_fdm" : "bvp");
+
+        $(`#q${q}Filename`).textContent=
+          `series_${seriesNumber}_${questionType}.m`;
+      }
+
+      $("#heroSeriesBadge").textContent=
+        `${SERIES_META[safeIndex].label} ـ معادلات دیفرانسیل معمولی`;
+
+      if(window.MathJax && typeof window.MathJax.typesetPromise==="function"){
+        window.MathJax.typesetClear?.([
+          $("#q1Dynamic"),
+          $("#q2Dynamic")
+        ]);
+        window.MathJax.typesetPromise([
+          $("#q1Dynamic"),
+          $("#q2Dynamic")
+        ]).catch(()=>{});
+      }
+    }
+
+    function restoreIdentity(){
+      $("#fullName").value = state.fullName || "";
+      $("#studentId").value = state.studentId || "";
+      $("#pledge").checked = Boolean(state.pledge);
+
+      $("#activeName").textContent = state.fullName || "دانشجو";
+      $("#activeMeta").textContent =
+        `شماره دانشجویی: ${state.studentId || "—"} | ` +
+        `${state.seriesLabel || "سری تعیین نشده"} | ` +
+        `کد آزمون: ${state.attemptCode || "—"}`;
+
+    }
+
+    function restoreFields(){
+      $$("[data-save='field']").forEach(el=>{
+        el.value = state.fields[el.id] ?? "";
+      });
+    }
+
+    function restoreEditors(){
+      editors.forEach(editor=>{
+        const key = editor.dataset.editor;
+        editor.value = state.code[key] || "";
+        updateEditorUi(editor);
+      });
+    }
+
+    function setEditingLocked(locked){
+      editors.forEach(editor=>editor.disabled = locked);
+      $$("[data-save='field']").forEach(el=>el.disabled = locked);
+      $("#finishButton").disabled = locked;
+
+      const ended = ["finished","expired"].includes(state.status);
+      $("#finishButton").hidden = ended;
+      $("#printEndedButton").hidden = !ended;
+    }
+
+    function updateLineNumbers(editor){
+      const key = editor.dataset.editor;
+      const count = editor.value.split("\n").length;
+      $(`#lines-${key}`).textContent =
+        Array.from({length:count},(_,index)=>index+1).join("\n");
+      $(`#total-${key}`).textContent = `${count} line${count===1?"":"s"}`;
+    }
+
+    function updateCursor(editor){
+      const key = editor.dataset.editor;
+      const before = editor.value.slice(0,editor.selectionStart);
+      const lines = before.split("\n");
+      const line = lines.length;
+      const column = lines[lines.length-1].length+1;
+      $(`#cursor-${key}`).textContent = `Ln ${line}, Col ${column}`;
+    }
+
+    function updateEditorUi(editor){
+      updateLineNumbers(editor);
+      updateCursor(editor);
+      updateProgress();
+    }
+
+    function updateProgress(){
+      const checks = [
+        Boolean((state.code.q1||"").trim()),
+        Boolean((state.code.q2||"").trim())
+      ];
+
+      const done = checks.filter(Boolean).length;
+      const percent = Math.round(done/checks.length*100);
+      $("#progressBar").style.width = `${percent}%`;
+      $("#progressLabel").textContent = `${toFaDigits(percent)}٪ تکمیل`;
+    }
+
+    function insertTab(editor){
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.value = editor.value.slice(0,start) + "    " + editor.value.slice(end);
+      editor.selectionStart = editor.selectionEnd = start+4;
+      editor.dispatchEvent(new Event("input"));
+    }
+
+    function isPasteShortcut(event){
+      const key = event.key.toLowerCase();
+      return ((event.ctrlKey||event.metaKey)&&["v","c","x"].includes(key)) ||
+             (event.shiftKey&&event.key==="Insert");
+    }
+
+    function isDeveloperShortcut(event){
+      const key = event.key.toLowerCase();
+      return event.key==="F12" ||
+        ((event.ctrlKey||event.metaKey)&&event.shiftKey&&["i","j","c"].includes(key)) ||
+        ((event.ctrlKey||event.metaKey)&&["u","s"].includes(key));
+    }
+
+    function appendAuditEvent(type,detail=""){
+      const event={
+        type,
+        detail,
+        at:Date.now()
+      };
+
+      state.violations.push(event);
+      saveState();
+      renderIntegrityLog();
+      return event;
+    }
+
+    function registerViolation(type,detail=""){
+      if(state.status!=="active") return;
+
+      const now = Date.now();
+      if(now-lastIncidentAt<1400) return;
+      lastIncidentAt=now;
+
+      state.violations.push({
+        type,
+        detail,
+        at:now
+      });
+      saveState();
+      renderIntegrityLog();
+
+      // رخدادها صرفاً ثبت می‌شوند و باعث قفل خودکار آزمون نخواهند شد.
+    }
+
+    function renderIntegrityLog(){
+      const count = state.violations.length;
+      $("#violationCount").textContent =
+        `${toFaDigits(count)} رخداد`;
+
+      const log = $("#integrityLog");
+      if(!state.violations.length){
+        log.innerHTML = "<div>هیچ رخدادی ثبت نشده است.</div>";
+        return;
+      }
+
+      log.innerHTML = state.violations.map((item,index)=>
+        `<div><strong>${toFaDigits(index+1)}.</strong> ${escapeHtml(item.type)}
+        ـ ${escapeHtml(formatDate(item.at))}
+        ${item.detail?` ـ ${escapeHtml(item.detail)}`:""}</div>`
+      ).join("");
+    }
+
+    function showIntegrityOverlay(message){
+      $("#overlayMessage").textContent = message;
+      overlay.hidden = false;
+    }
+
+    function integrityConditionsOkay(){
+      return !CONFIG.REQUIRE_FULLSCREEN || Boolean(document.fullscreenElement);
+    }
+
+    async function resumeIntegrity(){
+      if(CONFIG.REQUIRE_FULLSCREEN && !document.fullscreenElement){
+        const ok = await requestExamFullscreen();
+        if(!ok){
+          alert("ورود به حالت تمام‌صفحه انجام نشد.");
+          return;
+        }
+      }
+
+      if(integrityConditionsOkay()){
+        overlay.hidden = true;
+      }
+    }
+
+    function remainingMs(){
+      return Math.max(0,Number(state.deadline||0)-Date.now());
+    }
+
+    function renderTimer(){
+      if(state.status!=="active") return;
+
+      const now = Date.now();
+
+      if(state.lastSeenAt && now < state.lastSeenAt-5000){
+        registerViolation("تغییر غیرعادی ساعت سیستم","ساعت دستگاه به عقب بازگردانده شده است");
+      }
+
+      state.lastSeenAt = now;
+
+      const remaining = remainingMs();
+      if(remaining<=0){
+        expireExam();
+        return;
+      }
+
+      const total = Math.floor(remaining/1000);
+      const h = Math.floor(total/3600);
+      const m = Math.floor((total%3600)/60);
+      const s = total%60;
+      $("#timerText").textContent =
+        toFaDigits(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`);
+
+      $("#timerBox").classList.toggle("warn",remaining<=30*60*1000);
+      $("#timerBox").classList.toggle("danger",remaining<=10*60*1000);
+    }
+
+    function startTimer(){
+      clearInterval(timerHandle);
+      clearInterval(saveClockHandle);
+      renderTimer();
+      timerHandle=setInterval(renderTimer,1000);
+      saveClockHandle=setInterval(saveState,10000);
+    }
+
+    async function startExam(){
+      if(!isGoogleChrome()){
+        showOnly("browser-blocked");
+        return;
+      }
+
+      const fullName = $("#fullName").value.trim();
+      const studentId = $("#studentId").value.trim();
+      const pledge = $("#pledge").checked;
+
+      if(!fullName||!studentId){
+        alert("نام و نام خانوادگی و شماره دانشجویی را کامل کنید.");
+        return;
+      }
+
+      if(!pledge){
+        alert("برای شروع آزمون باید تعهد سلامت آزمون را بپذیرید.");
+        return;
+      }
+
+      const fullscreenOkay = await requestExamFullscreen();
+      if(CONFIG.REQUIRE_FULLSCREEN&&!fullscreenOkay){
+        alert("شروع آزمون به ورود موفق به حالت تمام‌صفحه نیاز دارد.");
+        return;
+      }
+
+      if(!state.startedAt){
+        if(!isExamWindowOpen()){
+          updateAvailability();
+          alert("شروع آزمون فقط از ساعت ۰۹:۰۰ تا ۲۴:۰۰ تهران امکان‌پذیر است.");
+          return;
+        }
+
+        const assignedIndex=getSeriesIndex();
+        if(assignedIndex===null){
+          alert("مجموعه سؤال قابل تعیین نیست.");
+          return;
+        }
+
+        state.fullName=fullName;
+        state.studentId=studentId;
+        state.pledge=true;
+        state.seriesIndex=assignedIndex;
+        state.seriesLabel=SERIES_META[assignedIndex].label;
+        state.seriesSlot=SERIES_META[assignedIndex].slot;
+        state.startedAt=Date.now();
+        state.deadline=state.startedAt+CONFIG.DURATION_MS;
+        state.lastSeenAt=state.startedAt;
+        state.attemptCode=makeAttemptCode();
+        state.status="active";
+        saveState();
+      }
+
+      restoreAll();
+      setEditingLocked(false);
+      $("#printEndedButton").hidden=true;
+      $("#finishButton").hidden=false;
+      showOnly("exam");
+      startTimer();
+      overlay.hidden=true;
+      const shield=$("#privacyShield");
+      if(shield) shield.hidden=true;
+      window.scrollTo({top:0,behavior:"instant"});
+    }
+
+    async function expireExam(){
+      clearInterval(timerHandle);
+      clearInterval(saveClockHandle);
+
+      if(state.status==="active"){
+        state.status="expired";
+        state.finishedAt=Date.now();
+        saveState();
+      }
+
+      setEditingLocked(true);
+      $("#lockedTitle").textContent="زمان آزمون پایان یافت";
+      $("#lockedMessage").textContent=
+        "پنجره چاپ پاسخ باز شده است. فایل را با نام Fullname-StudentID.pdf ذخیره و بلافاصله در Google Form بارگذاری کنید.";
+
+      internalFullscreenExit=true;
+      if(document.fullscreenElement){
+        await document.exitFullscreen().catch(()=>{});
+      }
+
+      triggerPrint(true);
+    }
+
+    async function finishExam(){
+      if(!confirm("آزمون پایان یابد و پنجره ذخیره PDF باز شود؟")) return;
+
+      state.status="finished";
+      state.finishedAt=Date.now();
+      state.lastSeenAt=Date.now();
+      saveState();
+      clearInterval(timerHandle);
+      clearInterval(saveClockHandle);
+      setEditingLocked(true);
+
+      $("#lockedTitle").textContent="آزمون با موفقیت پایان یافت";
+      $("#lockedMessage").textContent=
+        "فایل PDF را با نام Fullname-StudentID.pdf ذخیره و در سریع‌ترین زمان ممکن در Google Form بارگذاری کنید.";
+
+      internalFullscreenExit=true;
+      if(document.fullscreenElement){
+        await document.exitFullscreen().catch(()=>{});
+      }
+
+      triggerPrint(true);
+    }
+
+    function openLockedAnswers(){
+      restoreAll();
+      setEditingLocked(true);
+      $("#printEndedButton").hidden=false;
+      $("#finishButton").hidden=true;
+      showOnly("exam");
+      $("#timerText").textContent =
+        state.status==="expired"?"۰۰:۰۰:۰۰":"قفل‌شده";
+      $("#timerBox").classList.add("danger");
+      window.scrollTo({top:0,behavior:"instant"});
+    }
+
+    function restoreAll(){
+      const index=Number.isInteger(state.seriesIndex)
+        ? state.seriesIndex
+        : (getSeriesIndex() ?? 0);
+
+      renderSeries(index);
+      restoreIdentity();
+      restoreFields();
+      restoreEditors();
+      renderIntegrityLog();
+      updateProgress();
+    }
+
+    function pdfBaseName(){
+      const fullName = (state.fullName || "Fullname")
+        .replace(/[\\/:*?"<>|]/g,"")
+        .trim();
+      const studentId = (state.studentId || "StudentID")
+        .replace(/[\\/:*?"<>|]/g,"")
+        .trim();
+      return `${fullName}-${studentId}`;
+    }
+
+    function cloneQuestionForSimplePrint(index, code, codeTitle){
+      const source = document.querySelectorAll(".question-card")[index];
+      const clone = source.cloneNode(true);
+
+      clone.querySelectorAll(".screen-only,.print-only,.matlab-window")
+        .forEach(node=>node.remove());
+
+      clone.querySelectorAll("details.solution").forEach(details=>{
+        details.setAttribute("open","");
+      });
+
+      clone.querySelectorAll(".equation").forEach(equation=>{
+        const tex = equation.getAttribute("data-tex") || equation.textContent.trim();
+        equation.replaceChildren(document.createTextNode(tex));
+      });
+
+      const answerSection = document.createElement("section");
+      answerSection.className = "simple-code-section";
+
+      const heading = document.createElement("h3");
+      heading.textContent = codeTitle;
+
+      const codeBlock = document.createElement("pre");
+      codeBlock.textContent = code || "% پاسخی ثبت نشده است.";
+
+      answerSection.append(heading,codeBlock);
+      clone.querySelector(".question-body").appendChild(answerSection);
+
+      return clone.outerHTML;
+    }
+
+    function buildSimpleWarningHtml(){
+      if(!state.violations.length){
+        return "<p>هیچ اخطاری در طول آزمون ثبت نشده است.</p>";
+      }
+
+      return "<ol>" + state.violations.map(item=>
+        `<li><strong>${escapeHtml(item.type)}</strong> ـ ` +
+        `${escapeHtml(formatDate(item.at))}` +
+        `${item.detail ? ` ـ ${escapeHtml(item.detail)}` : ""}</li>`
+      ).join("") + "</ol>";
+    }
+
+    function buildSimplePrintDocument(){
+      const title = pdfBaseName();
+      const q1 = cloneQuestionForSimplePrint(
+        0,
+        state.code.q1,
+        "پاسخ کدنویسی MATLAB ـ سؤال اول"
+      );
+      const q2 = cloneQuestionForSimplePrint(
+        1,
+        state.code.q2,
+        "پاسخ کدنویسی MATLAB ـ سؤال دوم"
+      );
+
+      return `<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHtml(title)}</title>
+<style>
+  @page{size:A4;margin:14mm}
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    color:#111;
+    background:#fff;
+    font-family:Tahoma,"Segoe UI",Arial,sans-serif;
+    font-size:11pt;
+    line-height:1.75;
+  }
+  .print-sheet{width:100%;margin:0 auto}
+  .print-header{
+    margin-bottom:16px;
+    padding-bottom:12px;
+    border-bottom:2px solid #222;
+    text-align:center;
+  }
+  .print-header h1{margin:0 0 5px;font-size:19pt}
+  .print-header p{margin:0;color:#444}
+  .student-info{
+    width:100%;
+    margin:12px 0 18px;
+    border-collapse:collapse;
+  }
+  .student-info th,.student-info td{
+    padding:7px 9px;
+    border:1px solid #777;
+    text-align:right;
+  }
+  .student-info th{width:18%;background:#f0f0f0}
+  .question-card{
+    margin:0 0 18px;
+    border:1px solid #555;
+    page-break-inside:auto;
+  }
+  .question-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 12px;
+    border-bottom:1px solid #777;
+    background:#eee;
+  }
+  .question-title{display:flex;align-items:center;gap:10px}
+  .question-head h2{margin:0;font-size:14pt}
+  .question-head p{margin:2px 0 0;font-size:9pt;color:#444}
+  .q-number{
+    display:grid;
+    width:30px;height:30px;
+    place-items:center;
+    border:1px solid #333;
+    font-weight:bold;
+  }
+  .tag{
+    padding:3px 8px;
+    border:1px solid #555;
+    border-radius:12px;
+    font-size:9pt;
+  }
+  .question-body{padding:12px}
+  .problem,.fixed-constants,.solution-step{
+    margin:9px 0;
+    padding:9px 11px;
+    border:1px solid #aaa;
+  }
+  .problem{border-right:4px solid #444}
+  .fixed-constants{text-align:center;background:#f8f8f8}
+  .solution{display:block;margin:12px 0;border:1px solid #777}
+  .solution summary{
+    padding:8px 10px;
+    border-bottom:1px solid #777;
+    background:#eee;
+    font-weight:bold;
+    list-style:none;
+  }
+  .solution-body{padding:9px}
+  .solution-step{page-break-inside:avoid}
+  .solution-step h4{margin:0 0 5px;font-size:11pt}
+  .equation{
+    direction:ltr;
+    unicode-bidi:isolate;
+    overflow:visible;
+    margin:6px 0;
+    padding:5px;
+    text-align:center;
+    font-family:"Cambria Math","Times New Roman",serif;
+  }
+  .equation mjx-container{margin:.2rem 0!important}
+  .simple-code-section{
+    margin-top:14px;
+    padding-top:10px;
+    border-top:2px solid #333;
+    page-break-inside:auto;
+  }
+  .simple-code-section h3{margin:0 0 7px;font-size:12pt}
+  .simple-code-section pre{
+    min-height:100px;
+    margin:0;
+    padding:10px;
+    border:1px solid #555;
+    background:#fafafa;
+    direction:ltr;
+    text-align:left;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    font:9.5pt/1.55 Consolas,"Courier New",monospace;
+  }
+  .warning-log{
+    margin-top:20px;
+    padding-top:12px;
+    border-top:2px solid #222;
+    page-break-before:always;
+  }
+  .warning-log h2{margin:0 0 7px;font-size:14pt}
+  .warning-log li{margin:6px 0}
+  .upload-note{
+    margin-top:18px;
+    padding:10px;
+    border:1px solid #555;
+    font-weight:bold;
+    text-align:center;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"><\/script>
+</head>
+<body>
+<main class="print-sheet">
+  <header class="print-header">
+    <h1>پاسخ آزمون کدنویسی MATLAB ـ ${escapeHtml(state.seriesLabel||"—")}</h1>
+    <p>بازه تخصیص مجموعه: ${escapeHtml(state.seriesSlot||"—")} ـ یک IVP و یک BVP</p>
+  </header>
+
+  <table class="student-info">
+    <tr>
+      <th>نام و نام خانوادگی</th>
+      <td>${escapeHtml(state.fullName||"—")}</td>
+      <th>شماره دانشجویی</th>
+      <td>${escapeHtml(state.studentId||"—")}</td>
+    </tr>
+    <tr>
+      <th>کد آزمون</th>
+      <td>${escapeHtml(state.attemptCode||"—")}</td>
+      <th>وضعیت</th>
+      <td>${escapeHtml(state.status||"—")}</td>
+    </tr>
+    <tr>
+      <th>زمان شروع</th>
+      <td>${escapeHtml(formatDate(state.startedAt))}</td>
+      <th>زمان پایان/مهلت</th>
+      <td>${escapeHtml(formatDate(state.finishedAt||state.deadline))}</td>
+    </tr>
+  </table>
+
+  ${q1}
+  ${q2}
+
+  <section class="warning-log">
+    <h2>گزارش اخطارها و رخدادهای آزمون</h2>
+    <p>ثبت رخداد به‌تنهایی به معنای تخلف قطعی نیست.</p>
+    ${buildSimpleWarningHtml()}
+  </section>
+
+  <div class="upload-note">
+    این فایل PDF را با نام ${escapeHtml(title)}.pdf ذخیره کرده و در سریع‌ترین زمان ممکن در Google Form بارگذاری کنید.
+  </div>
+</main>
+</body>
+</html>`;
+    }
+
+    function triggerPrint(returnToLocked=false){
+      if(returnToLocked){
+        showOnly("locked");
+      }
+
+      const previousTitle = document.title;
+      const printTitle = pdfBaseName();
+      document.title = printTitle;
+
+      const iframe = document.createElement("iframe");
+      iframe.setAttribute("aria-hidden","true");
+      iframe.style.cssText =
+        "position:fixed;left:-10000px;top:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none;";
+
+      let cleaned = false;
+      const cleanup = ()=>{
+        if(cleaned) return;
+        cleaned = true;
+        document.title = previousTitle;
+        setTimeout(()=>iframe.remove(),0);
+      };
+
+      iframe.addEventListener("load",async()=>{
+        const printWindow = iframe.contentWindow;
+
+        try{
+          if(printWindow.MathJax &&
+             printWindow.MathJax.startup &&
+             printWindow.MathJax.startup.promise){
+            await printWindow.MathJax.startup.promise;
+          }
+
+          if(printWindow.MathJax &&
+             typeof printWindow.MathJax.typesetPromise === "function"){
+            await printWindow.MathJax.typesetPromise();
+          }
+        }catch(error){
+          console.error(error);
+        }
+
+        printWindow.addEventListener("afterprint",cleanup,{once:true});
+        setTimeout(()=>{
+          printWindow.focus();
+          printWindow.print();
+        },500);
+      },{once:true});
+
+      iframe.srcdoc = buildSimplePrintDocument();
+      document.body.appendChild(iframe);
+
+      setTimeout(cleanup,300000);
+    }
+
+    function printExam(){
+      triggerPrint(state.status!=="active" && state.status!=="not-started");
+    }
+
+    function escapeHtml(value){
+      return String(value??"").replace(/[&<>"']/g,char=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      })[char]);
+    }
+
+    /*
+     * رویدادهای فرم و ویرایشگر
+     */
+    editors.forEach(editor=>{
+      editor.addEventListener("input",()=>{
+        const key=editor.dataset.editor;
+        state.code[key]=editor.value;
+        saveState();
+        updateEditorUi(editor);
+      });
+
+      editor.addEventListener("click",()=>updateCursor(editor));
+      editor.addEventListener("keyup",()=>updateCursor(editor));
+      editor.addEventListener("select",()=>updateCursor(editor));
+      editor.addEventListener("scroll",()=>{
+        $(`#lines-${editor.dataset.editor}`).scrollTop=editor.scrollTop;
+      });
+
+      editor.addEventListener("keydown",event=>{
+        if(isPasteShortcut(event)){
+          event.preventDefault();
+          alert("کپی، برش و جای‌گذاری در محیط آزمون غیرفعال است.");
+          return;
+        }
+
+        if(event.key==="Tab"){
+          event.preventDefault();
+          insertTab(editor);
+        }
+      });
+
+      editor.addEventListener("paste",event=>{
+        event.preventDefault();
+        alert("جای‌گذاری غیرفعال است؛ کد را مستقیماً تایپ کنید.");
+      });
+
+      editor.addEventListener("drop",event=>event.preventDefault());
+      editor.addEventListener("dragover",event=>event.preventDefault());
+      editor.addEventListener("contextmenu",event=>event.preventDefault());
+    });
+
+    $$("[data-save='field']").forEach(el=>{
+      el.addEventListener("input",()=>{
+        state.fields[el.id]=el.value;
+        saveState();
+        updateProgress();
+      });
+      el.addEventListener("change",()=>{
+        state.fields[el.id]=el.value;
+        saveState();
+        updateProgress();
+      });
+    });
+
+    function showPrivacyShield(message){
+      if(state.status!=="active") return;
+      const shield = $("#privacyShield");
+      if(!shield) return;
+      $("#privacyShieldMessage").textContent =
+        message || "نمایش صفحه برای حفاظت از محتوای آزمون موقتاً پوشانده شد.";
+      shield.hidden=false;
+    }
+
+    function hidePrivacyShield(){
+      const shield = $("#privacyShield");
+      if(!shield) return;
+      setTimeout(()=>{
+        if(document.hasFocus()) shield.hidden=true;
+      },350);
+    }
+
+    /*
+     * کنترل‌های سلامت آزمون
+     */
+    document.addEventListener("copy",event=>{
+      if(state.status==="active") event.preventDefault();
+    });
+
+    document.addEventListener("cut",event=>{
+      if(state.status==="active") event.preventDefault();
+    });
+
+    document.addEventListener("paste",event=>{
+      if(state.status==="active") event.preventDefault();
+    });
+
+    document.addEventListener("contextmenu",event=>{
+      if(state.status==="active") event.preventDefault();
+    });
+
+    document.addEventListener("keydown",event=>{
+      if(state.status!=="active") return;
+
+      if(event.key==="PrintScreen"){
+        event.preventDefault();
+        registerViolation("تلاش قابل‌تشخیص برای ثبت تصویر صفحه","کلید Print Screen فشرده شد");
+        showPrivacyShield("تلاش برای ثبت تصویر صفحه شناسایی شد.");
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText("").catch(()=>{});
+        }
+        setTimeout(hidePrivacyShield,1400);
+        return;
+      }
+
+      if(isDeveloperShortcut(event)){
+        event.preventDefault();
+        registerViolation("میانبر محدودشده مرورگر یا ابزار توسعه");
+      }
+    });
+
+    document.addEventListener("visibilitychange",()=>{
+      if(state.status==="active"&&document.hidden){
+        registerViolation("تغییر تب یا مخفی‌شدن صفحه");
+        showPrivacyShield("صفحه آزمون به دلیل خروج از پنجره فعال پوشانده شد.");
+      }else if(!document.hidden){
+        hidePrivacyShield();
+      }
+    });
+
+    window.addEventListener("blur",()=>{
+      if(state.status==="active"){
+        registerViolation("خروج تمرکز از پنجره آزمون");
+        showPrivacyShield("پنجره آزمون از حالت فعال خارج شد.");
+      }
+    });
+
+    window.addEventListener("focus",hidePrivacyShield);
+
+    document.addEventListener("fullscreenchange",()=>{
+      if(state.status!=="active") return;
+      if(internalFullscreenExit){
+        internalFullscreenExit=false;
+        return;
+      }
+
+      if(CONFIG.REQUIRE_FULLSCREEN&&!document.fullscreenElement){
+        registerViolation("خروج از حالت تمام‌صفحه");
+        showPrivacyShield("از حالت تمام‌صفحه خارج شدید.");
+        showIntegrityOverlay("از حالت تمام‌صفحه خارج شدید. برای ادامه دوباره وارد تمام‌صفحه شوید.");
+      }
+    });
+    window.addEventListener("online",()=>{});
+    window.addEventListener("offline",()=>{});
+
+    window.addEventListener("beforeunload",()=>{
+      if(state.status==="active"){
+        state.lastSeenAt=Date.now();
+        saveState();
+      }
+    });
+
+
+    async function retryExam(){
+      const password = window.prompt("رمز شروع مجدد آزمون را وارد کنید:");
+
+      if(password===null){
+        return;
+      }
+
+      if(password!==CONFIG.RETAKE_PASSWORD){
+        appendAuditEvent(
+          "تلاش ناموفق برای شروع مجدد آزمون",
+          "رمز واردشده صحیح نبود"
+        );
+        alert("رمز شروع مجدد صحیح نیست.");
+        return;
+      }
+
+      const confirmed = window.confirm(
+        "رمز صحیح است.\\n\\n" +
+        "آزمون قبلی پاک و یک تلاش جدید ایجاد شود؟"
+      );
+
+      if(!confirmed){
+        appendAuditEvent(
+          "لغو شروع مجدد آزمون",
+          "رمز صحیح بود اما کاربر عملیات را لغو کرد"
+        );
+        return;
+      }
+
+      const previousAttemptCode = state.attemptCode || "بدون کد";
+      const previousSeries = state.seriesLabel || "سری نامشخص";
+      const retakeEvent = {
+        type:"شروع مجدد آزمون",
+        detail:
+          `شروع مجدد با رمز تأیید شد؛ تلاش قبلی: ${previousAttemptCode} ـ ${previousSeries}`,
+        at:Date.now()
+      };
+
+      clearInterval(timerHandle);
+      clearInterval(saveClockHandle);
+
+      internalFullscreenExit = true;
+      if(document.fullscreenElement){
+        await document.exitFullscreen().catch(()=>{});
+      }
+
+      localStorage.removeItem(CONFIG.STORAGE_KEY);
+      state = freshState();
+      state.violations = [retakeEvent];
+      saveState();
+
+      editors.forEach(editor=>{
+        editor.value = "";
+        editor.disabled = false;
+        editor.scrollTop = 0;
+        updateEditorUi(editor);
+      });
+
+      $("#fullName").value = "";
+      $("#studentId").value = "";
+      $("#pledge").checked = false;
+
+      $("#timerText").textContent = "۰۲:۰۰:۰۰";
+      $("#timerBox").classList.remove("warn","danger");
+      $("#restoreNotice").hidden = true;
+      $("#printEndedButton").hidden = true;
+      $("#finishButton").hidden = false;
+      overlay.hidden = true;
+
+      const shield = $("#privacyShield");
+      if(shield) shield.hidden = true;
+
+      restoreIdentity();
+      restoreFields();
+      renderIntegrityLog();
+      updateProgress();
+      showOnly("start");
+      updateAvailability();
+
+      window.scrollTo({top:0,behavior:"instant"});
+      $("#fullName").focus();
+    }
+
+    /*
+     * دکمه‌ها
+     */
+    $("#startButton").addEventListener("click",startExam);
+    $("#fullscreenButton").addEventListener("click",requestExamFullscreen);
+    $("#resumeButton").addEventListener("click",resumeIntegrity);
+    $("#finishButton").addEventListener("click",finishExam);
+    $("#viewLockedButton").addEventListener("click",openLockedAnswers);
+    $("#printLockedButton").addEventListener("click",printExam);
+    $("#printEndedButton").addEventListener("click",printExam);
+    $("#retryExamButton").addEventListener("click",retryExam);
+
+    /*
+     * راه‌اندازی
+     */
+    async function initialize(){
+      updateAvailability();
+
+      if(!isGoogleChrome()){
+        showOnly("browser-blocked");
+        return;
+      }
+
+      updateNetworkStatus();
+      restoreAll();
+
+      if(state.status==="active"){
+        $("#restoreNotice").hidden=false;
+
+        if(remainingMs()<=0){
+          expireExam();
+          return;
+        }
+
+        showOnly("exam");
+        setEditingLocked(false);
+        startTimer();
+
+        if(!integrityConditionsOkay()){
+          showIntegrityOverlay("برای ادامه آزمون وارد حالت تمام‌صفحه شوید.");
+        }
+        return;
+      }
+
+      if(["finished","expired"].includes(state.status)){
+        $("#lockedTitle").textContent =
+          state.status==="expired"
+            ?"زمان آزمون پایان یافت"
+            :"آزمون پایان یافته است";
+
+        showOnly("locked");
+        return;
+      }
+
+      showOnly("start");
+    }
+
+    setInterval(()=>{
+      if(state.status==="not-started"){
+        updateAvailability();
+      }
+    },30000);
+
+    initialize();
+  </script>
+</body>
+</html>
