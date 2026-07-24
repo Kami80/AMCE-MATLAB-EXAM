@@ -1883,7 +1883,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
      * تنظیمات قابل ویرایش توسط استاد
      */
     const CONFIG = {
-      STORAGE_KEY: "matlabExamAll7SeriesFaV4StaticStudentVerified",
+      STORAGE_KEY: "matlabExamAll7SeriesFaV5StaticStudentVerifiedFixed",
       DURATION_MS: 2 * 60 * 60 * 1000,
       REQUIRE_OFFLINE: false,
       REQUIRE_FULLSCREEN: true,
@@ -1895,7 +1895,9 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       // فهرست مجاز دانشجویان ـ فقط خواندنی و مناسب میزبانی کاملاً Static
       REGISTRATION_SHEET_ID: "1NF4IVWn4K52n9nq4pR8yqTERfPLok9VfkuxtOpzX8js",
       REGISTRATION_SHEET_GID: "0",
+      REGISTRATION_SHEET_NAME: "Form Responses 1",
       REGISTRATION_STUDENT_ID_COLUMN: "D",
+      REGISTRATION_FORM_URL: "https://docs.google.com/forms/d/e/1FAIpQLSfVSbX9o5U0X_rOhcdikuOTbDJSLZwZbwSXK76x6pgfN3CMMg/viewform?usp=sharing",
       REGISTRATION_TIMEOUT_MS: 15000,
     };
 
@@ -2487,17 +2489,46 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       }
     }
 
-    function loadRegisteredStudentIds(){
+    function parseStudentIdsFromGvizResponse(response){
+      if(!response || response.status!=="ok" || !response.table){
+        const message = response?.errors?.[0]?.detailed_message ||
+          response?.errors?.[0]?.message ||
+          "پاسخ Google Sheet معتبر نیست.";
+        throw new Error(message);
+      }
+
+      const ids = new Set();
+      const rows = Array.isArray(response.table.rows)
+        ? response.table.rows
+        : [];
+
+      rows.forEach(row=>{
+        const cell = row?.c?.[0];
+        if(!cell) return;
+
+        [cell.v,cell.f].forEach(value=>{
+          const id = comparableStudentId(value);
+          if(id) ids.add(id);
+        });
+      });
+
+      return ids;
+    }
+
+    function queryStudentIdsByJsonp(extraParams={}){
       return new Promise((resolve,reject)=>{
+        // Google نمونه رسمی responseHandler را با نام ساده پیشنهاد می‌کند.
         const callbackName =
-          `__matlabExamSheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+          `matlabExamSheetCallback${Date.now()}${Math.random().toString(36).slice(2).replace(/[^a-z0-9]/gi,"")}`;
         const script = document.createElement("script");
         let settled = false;
+        let timeoutHandle = null;
 
         const cleanup = ()=>{
-          clearTimeout(timeoutHandle);
+          if(timeoutHandle) clearTimeout(timeoutHandle);
           script.remove();
-          try{ delete window[callbackName]; }catch(_error){ window[callbackName]=undefined; }
+          try{ delete window[callbackName]; }
+          catch(_error){ window[callbackName]=undefined; }
         };
 
         const succeed = value=>{
@@ -2516,59 +2547,166 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 
         window[callbackName] = response=>{
           try{
-            if(!response || response.status!=="ok" || !response.table){
-              const message = response?.errors?.[0]?.detailed_message ||
-                response?.errors?.[0]?.message ||
-                "پاسخ Google Sheet معتبر نیست.";
-              fail(new Error(message));
-              return;
-            }
-
-            const ids = new Set();
-            const rows = Array.isArray(response.table.rows)
-              ? response.table.rows
-              : [];
-
-            rows.forEach(row=>{
-              const cell = row?.c?.[0];
-              if(!cell) return;
-
-              [cell.v,cell.f].forEach(value=>{
-                const id = comparableStudentId(value);
-                if(id) ids.add(id);
-              });
-            });
-
-            succeed(ids);
+            succeed(parseStudentIdsFromGvizResponse(response));
           }catch(error){
             fail(error);
           }
         };
 
         script.async = true;
-        script.onerror = ()=>fail(new Error("ارتباط با Google Sheet برقرار نشد."));
-        script.referrerPolicy = "no-referrer";
+        script.onerror = ()=>fail(new Error("بارگذاری پاسخ Google Sheet ناموفق بود."));
 
         const column = CONFIG.REGISTRATION_STUDENT_ID_COLUMN;
-        const query = `select ${column} where ${column} is not null`;
         const baseUrl =
           `https://docs.google.com/spreadsheets/d/${CONFIG.REGISTRATION_SHEET_ID}/gviz/tq`;
         const params = new URLSearchParams({
-          gid:String(CONFIG.REGISTRATION_SHEET_GID),
           headers:"1",
-          tq:query,
-          tqx:`out:json;responseHandler:${callbackName}`,
-          _:String(Date.now())
+          tq:`select ${column} where ${column} is not null`,
+          // مطابق نمونه رسمی Google؛ افزودن out:json ضروری نیست.
+          tqx:`responseHandler:${callbackName}`,
+          ...extraParams,
+          cacheBust:String(Date.now())
         });
 
         script.src = `${baseUrl}?${params.toString()}`;
-
-        const timeoutHandle = setTimeout(()=>{
+        timeoutHandle = setTimeout(()=>{
           fail(new Error("زمان دریافت فهرست دانشجویان به پایان رسید."));
         },CONFIG.REGISTRATION_TIMEOUT_MS);
 
         document.head.appendChild(script);
       });
+    }
+
+    let googleChartsReadyPromise = null;
+
+    function ensureGoogleChartsQueryReady(){
+      if(window.google?.visualization?.Query){
+        return Promise.resolve();
+      }
+
+      if(googleChartsReadyPromise){
+        return googleChartsReadyPromise;
+      }
+
+      googleChartsReadyPromise = new Promise((resolve,reject)=>{
+        const beginLoad = ()=>{
+          try{
+            if(!window.google?.charts){
+              reject(new Error("Google Charts Loader در دسترس نیست."));
+              return;
+            }
+
+            window.google.charts.load("current",{packages:["table"]});
+            window.google.charts.setOnLoadCallback(()=>{
+              if(window.google?.visualization?.Query){
+                resolve();
+              }else{
+                reject(new Error("Google Visualization Query بارگذاری نشد."));
+              }
+            });
+          }catch(error){
+            reject(error);
+          }
+        };
+
+        if(window.google?.charts){
+          beginLoad();
+          return;
+        }
+
+        const loader = document.createElement("script");
+        loader.src = "https://www.gstatic.com/charts/loader.js";
+        loader.async = true;
+        loader.onload = beginLoad;
+        loader.onerror = ()=>reject(new Error("Google Charts Loader دریافت نشد."));
+        document.head.appendChild(loader);
+      });
+
+      return googleChartsReadyPromise;
+    }
+
+    async function queryStudentIdsWithGoogleCharts(extraParams={}){
+      await ensureGoogleChartsQueryReady();
+
+      return new Promise((resolve,reject)=>{
+        let settled = false;
+        const finish = (callback,value)=>{
+          if(settled) return;
+          settled = true;
+          clearTimeout(timeoutHandle);
+          callback(value);
+        };
+
+        const baseUrl =
+          `https://docs.google.com/spreadsheets/d/${CONFIG.REGISTRATION_SHEET_ID}/gviz/tq`;
+        const params = new URLSearchParams({headers:"1",...extraParams});
+        const queryUrl = `${baseUrl}?${params.toString()}`;
+        const query = new window.google.visualization.Query(queryUrl);
+        const column = CONFIG.REGISTRATION_STUDENT_ID_COLUMN;
+        query.setQuery(`select ${column} where ${column} is not null`);
+
+        const timeoutHandle = setTimeout(()=>{
+          finish(reject,new Error("زمان دریافت فهرست دانشجویان به پایان رسید."));
+        },CONFIG.REGISTRATION_TIMEOUT_MS);
+
+        query.send(response=>{
+          try{
+            if(response.isError()){
+              const details = [response.getMessage?.(),response.getDetailedMessage?.()]
+                .filter(Boolean).join(" ـ ");
+              finish(reject,new Error(details || "Google Sheet خطای Query برگرداند."));
+              return;
+            }
+
+            const table = response.getDataTable();
+            const ids = new Set();
+            for(let row=0;row<table.getNumberOfRows();row++){
+              [table.getValue(row,0),table.getFormattedValue(row,0)].forEach(value=>{
+                const id = comparableStudentId(value);
+                if(id) ids.add(id);
+              });
+            }
+            finish(resolve,ids);
+          }catch(error){
+            finish(reject,error);
+          }
+        });
+      });
+    }
+
+    async function loadRegisteredStudentIds(){
+      const selectors = [
+        {gid:String(CONFIG.REGISTRATION_SHEET_GID)},
+        {sheet:String(CONFIG.REGISTRATION_SHEET_NAME)},
+        {}
+      ];
+      const errors = [];
+
+      // روش اول: JSONP مستقیم؛ مناسب‌ترین روش برای سایت Static و بدون CORS.
+      for(const selector of selectors){
+        try{
+          const ids = await queryStudentIdsByJsonp(selector);
+          if(ids.size) return ids;
+          errors.push(new Error("پاسخ دریافت شد اما هیچ شماره دانشجویی در ستون D نبود."));
+        }catch(error){
+          errors.push(error);
+        }
+      }
+
+      // روش دوم: API رسمی Google Visualization Query به‌عنوان fallback.
+      for(const selector of selectors){
+        try{
+          const ids = await queryStudentIdsWithGoogleCharts(selector);
+          if(ids.size) return ids;
+          errors.push(new Error("پاسخ دریافت شد اما هیچ شماره دانشجویی در ستون D نبود."));
+        }catch(error){
+          errors.push(error);
+        }
+      }
+
+      console.error("All Google Sheet registration checks failed:",errors);
+      const summary = errors.map(error=>error?.message).filter(Boolean).slice(-3).join(" | ");
+      throw new Error(summary || "فهرست ثبت‌نام Google Sheet قابل دریافت نیست.");
     }
 
     async function verifyStudentRegistration(studentId){
