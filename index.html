@@ -445,90 +445,218 @@
     }
 
     .matlab-window{
+      --editor-font-size:15px;
+      position:relative;
+      isolation:isolate;
       overflow:hidden;
-      border:1px solid #242424;
-      border-radius:12px;
+      border:1px solid #3d4650;
+      border-radius:16px;
       background:var(--editor);
-      box-shadow:0 11px 27px rgba(0,0,0,.17);
+      box-shadow:0 16px 38px rgba(5,14,22,.24),0 2px 8px rgba(5,14,22,.18);
+      transition:border-color .18s,box-shadow .18s,transform .18s;
     }
+
+    .matlab-window:focus-within{
+      border-color:#168dcc;
+      box-shadow:0 18px 42px rgba(0,75,120,.24),0 0 0 3px rgba(0,114,189,.14);
+    }
+
+    .matlab-window.is-expanded{
+      position:fixed;
+      inset:14px;
+      z-index:4500;
+      display:flex;
+      flex-direction:column;
+      border-radius:14px;
+      box-shadow:0 28px 90px rgba(0,0,0,.55);
+    }
+
+    .matlab-window.is-expanded .editor-grid{flex:1;min-height:0}
+    .matlab-window.is-expanded .code-editor,
+    .matlab-window.is-expanded .line-numbers{height:100%!important;min-height:0}
 
     .matlab-titlebar{
       display:grid;
-      grid-template-columns:1fr auto 1fr;
+      grid-template-columns:auto minmax(0,1fr) auto;
+      gap:14px;
       align-items:center;
-      min-height:44px;
-      padding:0 14px;
-      border-bottom:1px solid #363636;
-      color:#d8d8d8;
-      background:var(--editor-top);
+      min-height:52px;
+      padding:7px 12px 7px 14px;
+      border-bottom:1px solid #3a424b;
+      color:#e6edf3;
+      background:linear-gradient(180deg,#323840,#282d33);
       direction:ltr;
     }
 
-    .window-controls{display:flex;gap:7px}
-    .window-dot{width:11px;height:11px;border-radius:50%}
-    .window-dot.red{background:#e06c60}
-    .window-dot.yellow{background:#d9ba66}
-    .window-dot.green{background:#65c466}
-    .filename{font:13px Consolas,"Courier New",monospace}
-    .language{justify-self:end;color:#a7adb1;font-size:12px}
+    .window-controls{display:flex;gap:7px;align-items:center}
+    .window-dot{
+      width:11px;height:11px;border-radius:50%;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),0 1px 2px rgba(0,0,0,.25)
+    }
+    .window-dot.red{background:#ef6a5f}
+    .window-dot.yellow{background:#e5bd4f}
+    .window-dot.green{background:#61c454}
+
+    .editor-file-info{
+      min-width:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+    }
+
+    .file-icon{
+      display:grid;
+      width:28px;height:28px;
+      place-items:center;
+      flex:0 0 auto;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:7px;
+      color:#ffd866;
+      background:#20252a;
+      font:800 11px/1 Consolas,"Courier New",monospace;
+    }
+
+    .filename-stack{min-width:0;text-align:left}
+    .filename{
+      display:block;
+      overflow:hidden;
+      color:#f3f6f8;
+      font:600 13px/1.25 Consolas,"Courier New",monospace;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .filetype{display:block;margin-top:2px;color:#909ca6;font-size:10px}
+
+    .editor-actions{display:flex;gap:6px;align-items:center;justify-content:flex-end}
+    .save-state{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      min-height:28px;
+      padding:4px 9px;
+      border:1px solid #46515c;
+      border-radius:999px;
+      color:#b9c4cc;
+      background:#23292f;
+      font-size:10px;
+      white-space:nowrap;
+      direction:rtl;
+    }
+    .save-state::before{
+      content:"";
+      width:7px;height:7px;
+      border-radius:50%;
+      background:#55c77a;
+      box-shadow:0 0 0 3px rgba(85,199,122,.12);
+    }
+    .save-state.saving::before{background:#e7b64e;box-shadow:0 0 0 3px rgba(231,182,78,.12)}
+
+    .editor-tool{
+      display:grid;
+      min-width:30px;height:30px;
+      padding:0 7px;
+      place-items:center;
+      border:1px solid #46515c;
+      border-radius:7px;
+      color:#dce4ea;
+      background:#252b31;
+      cursor:pointer;
+      font:700 11px/1 "Segoe UI",Arial,sans-serif;
+      transition:background .15s,border-color .15s,transform .15s;
+    }
+    .editor-tool:hover{border-color:#6f8290;background:#343d45;transform:translateY(-1px)}
+    .editor-tool:focus-visible{outline:2px solid #42a5d8;outline-offset:2px}
+
+    .editor-toolbar{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      min-height:34px;
+      padding:0 13px;
+      border-bottom:1px solid #333a42;
+      color:#9faab3;
+      background:#20252a;
+      direction:ltr;
+      font:11px/1.2 Consolas,"Courier New",monospace;
+    }
+    .editor-toolbar .crumb{overflow:hidden;color:#cbd4da;text-overflow:ellipsis;white-space:nowrap}
+    .editor-toolbar .separator{color:#65727c}
+    .editor-toolbar .editor-hint{margin-left:auto;color:#77838c;white-space:nowrap}
 
     .editor-grid{
       display:grid;
-      grid-template-columns:54px 1fr;
+      grid-template-columns:60px minmax(0,1fr);
       direction:ltr;
-      min-height:330px;
+      min-height:360px;
+      background:var(--editor);
     }
 
     .line-numbers{
-      height:330px;
+      height:360px;
       overflow:hidden;
       margin:0;
-      padding:15px 10px 15px 0;
+      padding:17px 12px 34px 0;
       border-right:1px solid var(--editor-border);
-      color:#858585;
-      background:var(--editor-gutter);
-      font:15px/1.55 Consolas,"Courier New",monospace;
+      color:#747d85;
+      background:linear-gradient(90deg,#24272a,#252526);
+      font:var(--editor-font-size)/1.62 Consolas,"Courier New",monospace;
       text-align:right;
       user-select:none;
     }
 
     .code-editor{
       width:100%;
-      height:330px;
-      min-height:330px;
+      height:360px;
+      min-height:360px;
       overflow:auto;
       resize:vertical;
       margin:0;
-      padding:15px 16px;
+      padding:17px 19px 34px;
       border:0;
       outline:none;
-      color:#dcdcdc;
-      background:var(--editor);
-      caret-color:#fff;
-      font:15px/1.55 Consolas,Monaco,"Courier New",monospace;
+      color:#e4e4e4;
+      background:
+        linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px) 0 0/4ch 100%,
+        var(--editor);
+      caret-color:#77d7ff;
+      font:var(--editor-font-size)/1.62 Consolas,Monaco,"Courier New",monospace;
+      font-variant-ligatures:none;
       tab-size:4;
       white-space:pre;
       direction:ltr;
       text-align:left;
+      scrollbar-color:#59636c #252526;
+      scrollbar-width:thin;
     }
 
-    .code-editor::placeholder{color:#57a64a;opacity:.88}
-    .code-editor:focus{box-shadow:inset 0 0 0 1px rgba(0,114,189,.9)}
-    .code-editor:disabled{cursor:not-allowed;opacity:.75}
+    .code-editor::-webkit-scrollbar{width:12px;height:12px}
+    .code-editor::-webkit-scrollbar-track{background:#252526}
+    .code-editor::-webkit-scrollbar-thumb{border:3px solid #252526;border-radius:999px;background:#59636c}
+    .code-editor::-webkit-scrollbar-thumb:hover{background:#727e88}
+    .code-editor::selection{color:#fff;background:#245e82}
+    .code-editor::placeholder{color:#5ea65a;opacity:.82}
+    .code-editor:focus{box-shadow:inset 3px 0 0 #1594d0}
+    .code-editor:disabled{cursor:not-allowed;opacity:.72}
 
     .statusbar{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      min-height:34px;
-      padding:0 14px;
-      color:#fff;
-      background:var(--blue);
+      min-height:36px;
+      padding:0 13px;
+      color:#eaf8ff;
+      background:linear-gradient(90deg,#0067a4,#007fbe);
       direction:ltr;
-      font:12px Consolas,"Courier New",monospace;
+      font:11px Consolas,"Courier New",monospace;
     }
 
-    .statusbar>div{display:flex;gap:15px}
+    .statusbar>div{display:flex;gap:14px;align-items:center}
+    .status-item{display:inline-flex;gap:5px;align-items:center;white-space:nowrap}
+    .status-muted{color:rgba(255,255,255,.72)}
+    .status-lock::before{content:"●";color:#8ce3a6;font-size:9px}
+
+    body.editor-expanded{overflow:hidden}
 
     .upload-panel{
       margin-top:18px;
@@ -701,6 +829,19 @@
     @media(max-width:500px){
       .constants{grid-template-columns:1fr}
       .statusbar>div:last-child{display:none}
+    }
+
+
+    @media(max-width:700px){
+      .matlab-titlebar{grid-template-columns:auto minmax(0,1fr);gap:10px}
+      .editor-actions{grid-column:1/-1;justify-content:center;padding-bottom:3px}
+      .save-state{margin-right:auto}
+      .editor-toolbar .editor-hint{display:none}
+      .editor-grid{grid-template-columns:48px minmax(0,1fr)}
+      .line-numbers{padding-right:8px}
+      .statusbar{align-items:flex-start;gap:6px;padding:7px 10px;flex-direction:column}
+      .statusbar>div{width:100%;gap:10px;overflow-x:auto}
+      .matlab-window.is-expanded{inset:5px}
     }
 
     @media print{
@@ -942,6 +1083,7 @@
 یکی از روش‌های Gaussian elimination، Gauss–Jordan یا Gauss–Seidel
 که توسط دانشجو کدنویسی شده انجام شود.
 </li><li>در طول آزمون پاسخ‌ها به‌صورت خودکار در همین مرورگر ذخیره می‌شوند.</li>
+<li>برای شروع آزمون، اتصال اینترنت لازم است و شماره دانشجویی باید قبلاً در فهرست Google Form ثبت شده باشد.</li>
 <li>آزمون هنگام شروع وارد حالت تمام‌صفحه می‌شود. تغییر تب و خروج از تمام‌صفحه فقط در گزارش آزمون ثبت می‌شود و باعث قفل خودکار نخواهد شد.</li>
 <li>تنها پاسخ قابل ارزیابی، کد MATLAB نوشته‌شده در دو ویرایشگر است. بخش پاسخ دست‌نویس صرفاً راهنمای کامل حل ریاضی است.</li>
 <li>استفاده از هوش مصنوعی، موتور جست‌وجو، پیام‌رسان، کپی‌کردن کد یا دریافت کمک از دیگران مجاز نیست.</li>
@@ -960,6 +1102,7 @@
 <input autocomplete="off" id="studentId" placeholder="شماره دانشجویی" type="text"/>
 </div>
 </div>
+<div class="notice availability-notice" hidden id="registrationStatus" role="status" aria-live="polite"></div>
 <label class="pledge">
 <input id="pledge" type="checkbox"/>
 <span>
@@ -1028,23 +1171,48 @@
 <span class="tag" id="q1Tag">IVP</span>
 </div>
 <div class="question-body"><div class="question-dynamic" id="q1Dynamic"></div>
-<div class="matlab-window screen-only">
+<div class="matlab-window screen-only" data-editor-shell="q1">
 <div class="matlab-titlebar">
-<div class="window-controls">
+<div class="window-controls" aria-hidden="true">
 <span class="window-dot red"></span>
 <span class="window-dot yellow"></span>
 <span class="window-dot green"></span>
 </div>
-<div class="filename" id="q1Filename">series1_ivp.m</div>
-<div class="language">MATLAB</div>
+<div class="editor-file-info">
+<span class="file-icon" aria-hidden="true">fx</span>
+<div class="filename-stack">
+<span class="filename" id="q1Filename">series1_ivp.m</span>
+<span class="filetype">MATLAB Script</span>
+</div>
+</div>
+<div class="editor-actions">
+<span class="save-state" id="save-q1">ذخیره‌شده</span>
+<button class="editor-tool" data-editor-action="font-down" data-target="q1" title="کوچک‌کردن فونت" type="button">A−</button>
+<button class="editor-tool" data-editor-action="font-up" data-target="q1" title="بزرگ‌کردن فونت" type="button">A+</button>
+<button class="editor-tool" data-editor-action="expand" data-target="q1" title="نمایش بزرگ ویرایشگر" type="button">⛶</button>
+</div>
+</div>
+<div class="editor-toolbar">
+<span class="status-muted">Current Folder</span><span class="separator">›</span>
+<span class="crumb" id="crumb-q1">series1_ivp.m</span>
+<span class="editor-hint">Tab = 4 spaces · Shift+Tab = unindent</span>
 </div>
 <div class="editor-grid">
-<pre class="line-numbers" id="lines-q1">1</pre>
-<textarea autocapitalize="off" autocomplete="off" autocorrect="off" class="code-editor" data-editor="q1" id="codeQ1" placeholder="% کد MATLAB سؤال 1 از مجموعه تخصیص‌یافته را فقط با تایپ مستقیم وارد کنید..." spellcheck="false" wrap="off"></textarea>
+<pre class="line-numbers" id="lines-q1" aria-hidden="true">1</pre>
+<textarea aria-label="ویرایشگر کد MATLAB سؤال اول" autocapitalize="off" autocomplete="off" autocorrect="off" class="code-editor" data-editor="q1" id="codeQ1" placeholder="% کد MATLAB سؤال 1 را اینجا تایپ کنید...&#10;% مثال: تعریف پارامترها، حلقه حل عددی، گزارش نتایج و رسم نمودار" spellcheck="false" wrap="off"></textarea>
 </div>
 <div class="statusbar">
-<div><span id="cursor-q1">Ln 1, Col 1</span><span id="total-q1">1 line</span></div>
-<div><span>Typing only</span><span>Auto-saved</span></div>
+<div>
+<span class="status-item" id="cursor-q1">Ln 1, Col 1</span>
+<span class="status-item" id="total-q1">1 line</span>
+<span class="status-item status-muted" id="chars-q1">0 chars</span>
+<span class="status-item status-muted" id="selection-q1">0 selected</span>
+</div>
+<div>
+<span class="status-item status-lock">Typing only</span>
+<span class="status-item">UTF-8</span>
+<span class="status-item">Spaces: 4</span>
+</div>
 </div>
 </div>
 <div class="print-only">
@@ -1066,23 +1234,48 @@
 <span class="tag" id="q2Tag">BVP</span>
 </div>
 <div class="question-body"><div class="question-dynamic" id="q2Dynamic"></div>
-<div class="matlab-window screen-only">
+<div class="matlab-window screen-only" data-editor-shell="q2">
 <div class="matlab-titlebar">
-<div class="window-controls">
+<div class="window-controls" aria-hidden="true">
 <span class="window-dot red"></span>
 <span class="window-dot yellow"></span>
 <span class="window-dot green"></span>
 </div>
-<div class="filename" id="q2Filename">series1_bvp.m</div>
-<div class="language">MATLAB</div>
+<div class="editor-file-info">
+<span class="file-icon" aria-hidden="true">fx</span>
+<div class="filename-stack">
+<span class="filename" id="q2Filename">series1_bvp.m</span>
+<span class="filetype">MATLAB Script</span>
+</div>
+</div>
+<div class="editor-actions">
+<span class="save-state" id="save-q2">ذخیره‌شده</span>
+<button class="editor-tool" data-editor-action="font-down" data-target="q2" title="کوچک‌کردن فونت" type="button">A−</button>
+<button class="editor-tool" data-editor-action="font-up" data-target="q2" title="بزرگ‌کردن فونت" type="button">A+</button>
+<button class="editor-tool" data-editor-action="expand" data-target="q2" title="نمایش بزرگ ویرایشگر" type="button">⛶</button>
+</div>
+</div>
+<div class="editor-toolbar">
+<span class="status-muted">Current Folder</span><span class="separator">›</span>
+<span class="crumb" id="crumb-q2">series1_bvp.m</span>
+<span class="editor-hint">Tab = 4 spaces · Shift+Tab = unindent</span>
 </div>
 <div class="editor-grid">
-<pre class="line-numbers" id="lines-q2">1</pre>
-<textarea autocapitalize="off" autocomplete="off" autocorrect="off" class="code-editor" data-editor="q2" id="codeQ2" placeholder="% کد MATLAB سؤال 2 از مجموعه تخصیص‌یافته را فقط با تایپ مستقیم وارد کنید..." spellcheck="false" wrap="off"></textarea>
+<pre class="line-numbers" id="lines-q2" aria-hidden="true">1</pre>
+<textarea aria-label="ویرایشگر کد MATLAB سؤال دوم" autocapitalize="off" autocomplete="off" autocorrect="off" class="code-editor" data-editor="q2" id="codeQ2" placeholder="% کد MATLAB سؤال 2 را اینجا تایپ کنید...&#10;% مثال: تعریف مدل، اجرای الگوریتم عددی، کنترل همگرایی و رسم نمودار" spellcheck="false" wrap="off"></textarea>
 </div>
 <div class="statusbar">
-<div><span id="cursor-q2">Ln 1, Col 1</span><span id="total-q2">1 line</span></div>
-<div><span>Typing only</span><span>Auto-saved</span></div>
+<div>
+<span class="status-item" id="cursor-q2">Ln 1, Col 1</span>
+<span class="status-item" id="total-q2">1 line</span>
+<span class="status-item status-muted" id="chars-q2">0 chars</span>
+<span class="status-item status-muted" id="selection-q2">0 selected</span>
+</div>
+<div>
+<span class="status-item status-lock">Typing only</span>
+<span class="status-item">UTF-8</span>
+<span class="status-item">Spaces: 4</span>
+</div>
 </div>
 </div>
 <div class="print-only">
@@ -1690,7 +1883,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
      * تنظیمات قابل ویرایش توسط استاد
      */
     const CONFIG = {
-      STORAGE_KEY: "matlabExamAll7SeriesFaV3Verified",
+      STORAGE_KEY: "matlabExamAll7SeriesFaV4StaticStudentVerified",
       DURATION_MS: 2 * 60 * 60 * 1000,
       REQUIRE_OFFLINE: false,
       REQUIRE_FULLSCREEN: true,
@@ -1698,6 +1891,12 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       EXAM_OPEN_MINUTE: 9 * 60,
       EXAM_CLOSE_MINUTE: 24 * 60,
       RETAKE_PASSWORD: "retakematlabexam",
+
+      // فهرست مجاز دانشجویان ـ فقط خواندنی و مناسب میزبانی کاملاً Static
+      REGISTRATION_SHEET_ID: "1NF4IVWn4K52n9nq4pR8yqTERfPLok9VfkuxtOpzX8js",
+      REGISTRATION_SHEET_GID: "0",
+      REGISTRATION_STUDENT_ID_COLUMN: "D",
+      REGISTRATION_TIMEOUT_MS: 15000,
     };
 
     const SERIES_META = [
@@ -1726,6 +1925,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
     let saveClockHandle = null;
     let lastIncidentAt = 0;
     let internalFullscreenExit = false;
+    let registrationCheckInProgress = false;
 
     function freshState(){
       return {
@@ -1925,7 +2125,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       }
 
       if(state.status==="not-started"){
-        $("#startButton").disabled=!open;
+        $("#startButton").disabled=!open || registrationCheckInProgress;
       }
     }
 
@@ -1947,8 +2147,10 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
           ? "ivp"
           : (seriesNumber<=3 ? "bvp_fdm" : "bvp");
 
-        $(`#q${q}Filename`).textContent=
-          `series_${seriesNumber}_${questionType}.m`;
+        const editorFilename=`series_${seriesNumber}_${questionType}.m`;
+        $(`#q${q}Filename`).textContent=editorFilename;
+        const crumb=$(`#crumb-q${q}`);
+        if(crumb) crumb.textContent=editorFilename;
       }
 
       $("#heroSeriesBadge").textContent=
@@ -2003,12 +2205,26 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       $("#printEndedButton").hidden = !ended;
     }
 
+    const editorSaveTimers = new Map();
+
+    function editorShell(editor){
+      return editor.closest("[data-editor-shell]");
+    }
+
+    function syncEditorHeight(editor){
+      const gutter=$(`#lines-${editor.dataset.editor}`);
+      if(gutter) gutter.style.height=`${editor.clientHeight}px`;
+    }
+
     function updateLineNumbers(editor){
       const key = editor.dataset.editor;
       const count = editor.value.split("\n").length;
       $(`#lines-${key}`).textContent =
         Array.from({length:count},(_,index)=>index+1).join("\n");
       $(`#total-${key}`).textContent = `${count} line${count===1?"":"s"}`;
+      const chars=$(`#chars-${key}`);
+      if(chars) chars.textContent=`${editor.value.length} chars`;
+      syncEditorHeight(editor);
     }
 
     function updateCursor(editor){
@@ -2018,12 +2234,61 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       const line = lines.length;
       const column = lines[lines.length-1].length+1;
       $(`#cursor-${key}`).textContent = `Ln ${line}, Col ${column}`;
+      const selected=Math.abs(editor.selectionEnd-editor.selectionStart);
+      const selection=$(`#selection-${key}`);
+      if(selection) selection.textContent=`${selected} selected`;
+    }
+
+    function markEditorSaved(editor){
+      const key=editor.dataset.editor;
+      const badge=$(`#save-${key}`);
+      if(!badge) return;
+      badge.classList.add("saving");
+      badge.textContent="در حال ذخیره";
+      clearTimeout(editorSaveTimers.get(key));
+      editorSaveTimers.set(key,setTimeout(()=>{
+        badge.classList.remove("saving");
+        badge.textContent="ذخیره‌شده";
+      },420));
     }
 
     function updateEditorUi(editor){
       updateLineNumbers(editor);
       updateCursor(editor);
       updateProgress();
+    }
+
+    function unindentSelection(editor){
+      const value=editor.value;
+      const selectionStart=editor.selectionStart;
+      const selectionEnd=editor.selectionEnd;
+      const lineStart=value.lastIndexOf("\n",selectionStart-1)+1;
+      const selectedBlock=value.slice(lineStart,selectionEnd);
+      let removedBeforeCursor=0;
+      let totalRemoved=0;
+      const updated=selectedBlock.replace(/^(?: {1,4}|\t)/gm,(match,offset)=>{
+        const removed=match.length;
+        totalRemoved+=removed;
+        if(offset<=selectionStart-lineStart) removedBeforeCursor+=removed;
+        return "";
+      });
+      editor.value=value.slice(0,lineStart)+updated+value.slice(selectionEnd);
+      editor.selectionStart=Math.max(lineStart,selectionStart-removedBeforeCursor);
+      editor.selectionEnd=Math.max(editor.selectionStart,selectionEnd-totalRemoved);
+      editor.dispatchEvent(new Event("input"));
+    }
+
+    function insertIndentedNewline(editor){
+      const start=editor.selectionStart;
+      const end=editor.selectionEnd;
+      const lineStart=editor.value.lastIndexOf("\n",start-1)+1;
+      const currentLine=editor.value.slice(lineStart,start);
+      const indent=(currentLine.match(/^[ \t]*/)||[""])[0];
+      const extraIndent=/\b(for|while|if|switch|try|function)\b[^%]*$/i.test(currentLine.trim()) ? "    " : "";
+      const insertion=`\n${indent}${extraIndent}`;
+      editor.value=editor.value.slice(0,start)+insertion+editor.value.slice(end);
+      editor.selectionStart=editor.selectionEnd=start+insertion.length;
+      editor.dispatchEvent(new Event("input"));
     }
 
     function updateProgress(){
@@ -2171,6 +2436,155 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       saveClockHandle=setInterval(saveState,10000);
     }
 
+    function normalizeStudentId(value){
+      const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+      const arabicDigits = "٠١٢٣٤٥٦٧٨٩";
+
+      return String(value ?? "")
+        .trim()
+        .replace(/[۰-۹]/g,d=>String(persianDigits.indexOf(d)))
+        .replace(/[٠-٩]/g,d=>String(arabicDigits.indexOf(d)))
+        .replace(/[^0-9]/g,"");
+    }
+
+    function comparableStudentId(value){
+      const normalized = normalizeStudentId(value);
+      if(!normalized) return "";
+      return normalized.replace(/^0+(?=\d)/,"");
+    }
+
+    function setRegistrationStatus(kind,message){
+      const notice = $("#registrationStatus");
+      if(!notice) return;
+
+      notice.hidden = false;
+      notice.classList.toggle("closed",kind==="error");
+      notice.classList.toggle("notice-success",kind==="success");
+      notice.textContent = message;
+    }
+
+    function clearRegistrationStatus(){
+      const notice = $("#registrationStatus");
+      if(!notice) return;
+      notice.hidden = true;
+      notice.textContent = "";
+      notice.classList.remove("closed","notice-success");
+    }
+
+    function setStartButtonBusy(busy){
+      registrationCheckInProgress = busy;
+      const button = $("#startButton");
+      if(!button) return;
+
+      button.textContent = busy
+        ? "در حال بررسی شماره دانشجویی..."
+        : "شروع آزمون دو ساعته";
+
+      if(busy){
+        button.disabled = true;
+      }else{
+        updateAvailability();
+      }
+    }
+
+    function loadRegisteredStudentIds(){
+      return new Promise((resolve,reject)=>{
+        const callbackName =
+          `__matlabExamSheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        let settled = false;
+
+        const cleanup = ()=>{
+          clearTimeout(timeoutHandle);
+          script.remove();
+          try{ delete window[callbackName]; }catch(_error){ window[callbackName]=undefined; }
+        };
+
+        const succeed = value=>{
+          if(settled) return;
+          settled = true;
+          cleanup();
+          resolve(value);
+        };
+
+        const fail = error=>{
+          if(settled) return;
+          settled = true;
+          cleanup();
+          reject(error instanceof Error ? error : new Error(String(error)));
+        };
+
+        window[callbackName] = response=>{
+          try{
+            if(!response || response.status!=="ok" || !response.table){
+              const message = response?.errors?.[0]?.detailed_message ||
+                response?.errors?.[0]?.message ||
+                "پاسخ Google Sheet معتبر نیست.";
+              fail(new Error(message));
+              return;
+            }
+
+            const ids = new Set();
+            const rows = Array.isArray(response.table.rows)
+              ? response.table.rows
+              : [];
+
+            rows.forEach(row=>{
+              const cell = row?.c?.[0];
+              if(!cell) return;
+
+              [cell.v,cell.f].forEach(value=>{
+                const id = comparableStudentId(value);
+                if(id) ids.add(id);
+              });
+            });
+
+            succeed(ids);
+          }catch(error){
+            fail(error);
+          }
+        };
+
+        script.async = true;
+        script.onerror = ()=>fail(new Error("ارتباط با Google Sheet برقرار نشد."));
+        script.referrerPolicy = "no-referrer";
+
+        const column = CONFIG.REGISTRATION_STUDENT_ID_COLUMN;
+        const query = `select ${column} where ${column} is not null`;
+        const baseUrl =
+          `https://docs.google.com/spreadsheets/d/${CONFIG.REGISTRATION_SHEET_ID}/gviz/tq`;
+        const params = new URLSearchParams({
+          gid:String(CONFIG.REGISTRATION_SHEET_GID),
+          headers:"1",
+          tq:query,
+          tqx:`out:json;responseHandler:${callbackName}`,
+          _:String(Date.now())
+        });
+
+        script.src = `${baseUrl}?${params.toString()}`;
+
+        const timeoutHandle = setTimeout(()=>{
+          fail(new Error("زمان دریافت فهرست دانشجویان به پایان رسید."));
+        },CONFIG.REGISTRATION_TIMEOUT_MS);
+
+        document.head.appendChild(script);
+      });
+    }
+
+    async function verifyStudentRegistration(studentId){
+      const requestedId = comparableStudentId(studentId);
+      if(!requestedId) return false;
+
+      const registeredIds = await loadRegisteredStudentIds();
+      return registeredIds.has(requestedId);
+    }
+
+    async function exitFullscreenAfterRejectedRegistration(){
+      if(document.fullscreenElement){
+        await document.exitFullscreen().catch(()=>{});
+      }
+    }
+
     async function startExam(){
       if(!isGoogleChrome()){
         showOnly("browser-blocked");
@@ -2186,9 +2600,30 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         return;
       }
 
+      if(!normalizeStudentId(studentId)){
+        alert("شماره دانشجویی واردشده معتبر نیست.");
+        return;
+      }
+
       if(!pledge){
         alert("برای شروع آزمون باید تعهد سلامت آزمون را بپذیرید.");
         return;
+      }
+
+      let assignedIndex = null;
+
+      if(!state.startedAt){
+        if(!isExamWindowOpen()){
+          updateAvailability();
+          alert("شروع آزمون فقط از ساعت ۰۹:۰۰ تا ۲۴:۰۰ تهران امکان‌پذیر است.");
+          return;
+        }
+
+        assignedIndex=getSeriesIndex();
+        if(assignedIndex===null){
+          alert("مجموعه سؤال قابل تعیین نیست.");
+          return;
+        }
       }
 
       const fullscreenOkay = await requestExamFullscreen();
@@ -2198,20 +2633,62 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       }
 
       if(!state.startedAt){
-        if(!isExamWindowOpen()){
-          updateAvailability();
-          alert("شروع آزمون فقط از ساعت ۰۹:۰۰ تا ۲۴:۰۰ تهران امکان‌پذیر است.");
+        setStartButtonBusy(true);
+        setRegistrationStatus(
+          "checking",
+          "در حال بررسی شماره دانشجویی در فهرست ثبت‌نام Google Form..."
+        );
+
+        let registered = false;
+
+        try{
+          registered = await verifyStudentRegistration(studentId);
+        }catch(error){
+          console.error(error);
+          setRegistrationStatus(
+            "error",
+            "فهرست ثبت‌نام قابل دریافت نیست. اتصال اینترنت و عمومی‌بودن Google Sheet را بررسی کنید."
+          );
+          await exitFullscreenAfterRejectedRegistration();
+          alert(
+            "امکان بررسی شماره دانشجویی وجود ندارد؛ آزمون شروع نشد.\n\n" +
+            "اتصال اینترنت را بررسی کرده و دوباره تلاش کنید."
+          );
+          setStartButtonBusy(false);
           return;
         }
 
-        const assignedIndex=getSeriesIndex();
-        if(assignedIndex===null){
-          alert("مجموعه سؤال قابل تعیین نیست.");
+        if(!registered){
+          setRegistrationStatus(
+            "error",
+            "این شماره دانشجویی در فهرست ثبت‌نام Google Form پیدا نشد."
+          );
+          await exitFullscreenAfterRejectedRegistration();
+          alert(
+            "شماره دانشجویی در فهرست ثبت‌نام پیدا نشد.\n\n" +
+            "ابتدا Google Form را با شماره دانشجویی صحیح تکمیل کنید."
+          );
+          setStartButtonBusy(false);
           return;
         }
+
+        if(CONFIG.REQUIRE_FULLSCREEN && !document.fullscreenElement){
+          setRegistrationStatus(
+            "error",
+            "حالت تمام‌صفحه هنگام بررسی شماره دانشجویی بسته شد. دوباره دکمه شروع را بزنید."
+          );
+          alert("برای شروع آزمون باید تا پایان بررسی در حالت تمام‌صفحه بمانید.");
+          setStartButtonBusy(false);
+          return;
+        }
+
+        setRegistrationStatus(
+          "success",
+          "شماره دانشجویی در فهرست ثبت‌نام تأیید شد. آزمون در حال شروع است."
+        );
 
         state.fullName=fullName;
-        state.studentId=studentId;
+        state.studentId=normalizeStudentId(studentId);
         state.pledge=true;
         state.seriesIndex=assignedIndex;
         state.seriesLabel=SERIES_META[assignedIndex].label;
@@ -2222,6 +2699,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         state.attemptCode=makeAttemptCode();
         state.status="active";
         saveState();
+        setStartButtonBusy(false);
       }
 
       restoreAll();
@@ -2626,12 +3104,15 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         const key=editor.dataset.editor;
         state.code[key]=editor.value;
         saveState();
+        markEditorSaved(editor);
         updateEditorUi(editor);
       });
 
       editor.addEventListener("click",()=>updateCursor(editor));
       editor.addEventListener("keyup",()=>updateCursor(editor));
       editor.addEventListener("select",()=>updateCursor(editor));
+      editor.addEventListener("focus",()=>editorShell(editor)?.classList.add("is-focused"));
+      editor.addEventListener("blur",()=>editorShell(editor)?.classList.remove("is-focused"));
       editor.addEventListener("scroll",()=>{
         $(`#lines-${editor.dataset.editor}`).scrollTop=editor.scrollTop;
       });
@@ -2645,7 +3126,14 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 
         if(event.key==="Tab"){
           event.preventDefault();
-          insertTab(editor);
+          if(event.shiftKey) unindentSelection(editor);
+          else insertTab(editor);
+          return;
+        }
+
+        if(event.key==="Enter"){
+          event.preventDefault();
+          insertIndentedNewline(editor);
         }
       });
 
@@ -2657,6 +3145,51 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       editor.addEventListener("drop",event=>event.preventDefault());
       editor.addEventListener("dragover",event=>event.preventDefault());
       editor.addEventListener("contextmenu",event=>event.preventDefault());
+
+      if(typeof ResizeObserver!=="undefined"){
+        editor._resizeObserver=new ResizeObserver(()=>syncEditorHeight(editor));
+        editor._resizeObserver.observe(editor);
+      }
+      syncEditorHeight(editor);
+    });
+
+    $$('[data-editor-action]').forEach(button=>{
+      button.addEventListener('click',()=>{
+        const key=button.dataset.target;
+        const shell=$(`[data-editor-shell="${key}"]`);
+        const editor=$(`#code${key.toUpperCase()}`);
+        if(!shell||!editor) return;
+
+        const action=button.dataset.editorAction;
+        if(action==='expand'){
+          const expanded=shell.classList.toggle('is-expanded');
+          document.body.classList.toggle('editor-expanded',expanded);
+          button.textContent=expanded?'✕':'⛶';
+          button.title=expanded?'بستن نمایش بزرگ':'نمایش بزرگ ویرایشگر';
+          setTimeout(()=>{
+            syncEditorHeight(editor);
+            editor.focus();
+          },40);
+          return;
+        }
+
+        const current=parseFloat(getComputedStyle(shell).getPropertyValue('--editor-font-size'))||15;
+        const next=action==='font-up' ? Math.min(20,current+1) : Math.max(12,current-1);
+        shell.style.setProperty('--editor-font-size',`${next}px`);
+        editor.focus();
+      });
+    });
+
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){
+        const expanded=document.querySelector('.matlab-window.is-expanded');
+        if(expanded){
+          expanded.classList.remove('is-expanded');
+          document.body.classList.remove('editor-expanded');
+          const button=expanded.querySelector('[data-editor-action="expand"]');
+          if(button){button.textContent='⛶';button.title='نمایش بزرگ ویرایشگر'}
+        }
+      }
     });
 
     $$("[data-save='field']").forEach(el=>{
@@ -2831,6 +3364,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       $("#fullName").value = "";
       $("#studentId").value = "";
       $("#pledge").checked = false;
+      clearRegistrationStatus();
 
       $("#timerText").textContent = "۰۲:۰۰:۰۰";
       $("#timerBox").classList.remove("warn","danger");
@@ -2856,6 +3390,9 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
     /*
      * دکمه‌ها
      */
+    $("#studentId").addEventListener("input",()=>{
+      if(state.status==="not-started") clearRegistrationStatus();
+    });
     $("#startButton").addEventListener("click",startExam);
     $("#fullscreenButton").addEventListener("click",requestExamFullscreen);
     $("#resumeButton").addEventListener("click",resumeIntegrity);
