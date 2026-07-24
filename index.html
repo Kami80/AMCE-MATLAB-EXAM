@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>آزمون کدنویسی MATLAB ـ سری اول</title>
+<title>آزمون کدنویسی MATLAB ـ نسخه بازبینی‌شده</title>
 <style>
     :root{
       --blue:#0072bd;
@@ -1349,7 +1349,21 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 <div class="equation" data-tex="$$F(s)=-ky_2(r_o;s)-h_c\left[y_1(r_o;s)-T_\infty\right]$$">$$F(s)=-ky_2(r_o;s)-h_c\left[y_1(r_o;s)-T_\infty\right]$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
 </div>
 <div class="solution-step">
-<h4>۴) اصلاح حدس</h4>
+<h4>۴) انتگرال‌گیری هر پرتاب با روش RK4</h4>
+<p>
+برای هر حدس شیب <span dir="ltr">s</span>، بردار اولیه
+<span dir="ltr">Y₀ = [Tᵢ, s]ᵀ</span> ساخته می‌شود. در هر گام شعاعی، تابع برداری زیر را تعریف کنید:
+</p>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(r,\mathbf{Y})=\begin{bmatrix}y_2\\-\dfrac{y_2}{r}-\dfrac{\dot q}{k}\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(r,\mathbf{Y})=\begin{bmatrix}y_2\\-\dfrac{y_2}{r}-\dfrac{\dot q}{k}\end{bmatrix}$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_1=\mathbf{f}(r_n,\mathbf{Y}_n)$$">$$\mathbf{K}_1=\mathbf{f}(r_n,\mathbf{Y}_n)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_2=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_1\right)$$">$$\mathbf{K}_2=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_1\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_3=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_2\right)$$">$$\mathbf{K}_3=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_2\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_4=\mathbf{f}\left(r_n+h_r,\mathbf{Y}_n+h_r\mathbf{K}_3\right)$$">$$\mathbf{K}_4=\mathbf{f}\left(r_n+h_r,\mathbf{Y}_n+h_r\mathbf{K}_3\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_r}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_r}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$</div>
+<p>پس از رسیدن به <span dir="ltr">r = rₒ</span>، باقیمانده <span dir="ltr">F(s)</span> محاسبه می‌شود.</p>
+</div>
+<div class="solution-step">
+<h4>۵) اصلاح حدس با روش سکانت</h4>
 <div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
 </div>
 </div>
@@ -1430,7 +1444,21 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 <div class="equation" data-tex="$$F(s)=y_2(L;s)$$">$$F(s)=y_2(L;s)$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
 </div>
 <div class="solution-step">
-<h4>۴) اصلاح مقدار s با سکانت</h4>
+<h4>۴) انتگرال‌گیری هر پرتاب با روش RK4</h4>
+<p>
+برای هر حدس <span dir="ltr">s = C(0)</span>، ابتدا
+<span dir="ltr">Y₀ = [s, (u/D_ax)(s-C_in)]ᵀ</span> تشکیل می‌شود. تابع دستگاه برابر است با:
+</p>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(z,\mathbf{Y})=\begin{bmatrix}y_2\\\dfrac{uy_2+k_ry_1}{D_{ax}}\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(z,\mathbf{Y})=\begin{bmatrix}y_2\\\dfrac{uy_2+k_ry_1}{D_{ax}}\end{bmatrix}$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_1=\mathbf{f}(z_n,\mathbf{Y}_n)$$">$$\mathbf{K}_1=\mathbf{f}(z_n,\mathbf{Y}_n)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_2=\mathbf{f}\left(z_n+\frac{h_z}{2},\mathbf{Y}_n+\frac{h_z}{2}\mathbf{K}_1\right)$$">$$\mathbf{K}_2=\mathbf{f}\left(z_n+\frac{h_z}{2},\mathbf{Y}_n+\frac{h_z}{2}\mathbf{K}_1\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_3=\mathbf{f}\left(z_n+\frac{h_z}{2},\mathbf{Y}_n+\frac{h_z}{2}\mathbf{K}_2\right)$$">$$\mathbf{K}_3=\mathbf{f}\left(z_n+\frac{h_z}{2},\mathbf{Y}_n+\frac{h_z}{2}\mathbf{K}_2\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_4=\mathbf{f}\left(z_n+h_z,\mathbf{Y}_n+h_z\mathbf{K}_3\right)$$">$$\mathbf{K}_4=\mathbf{f}\left(z_n+h_z,\mathbf{Y}_n+h_z\mathbf{K}_3\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_z}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_z}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$</div>
+<p>در انتهای هر پرتاب، مقدار <span dir="ltr">F(s)=y₂(L;s)</span> برای مرحله سکانت استفاده می‌شود.</p>
+</div>
+<div class="solution-step">
+<h4>۵) اصلاح مقدار s با سکانت</h4>
 <div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
 </div>
 </div>
@@ -1514,7 +1542,21 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 <div class="equation" data-tex="$$F(s)=D_ey_2(r_o;s)-k_g\left[C_b-y_1(r_o;s)\right]$$">$$F(s)=D_ey_2(r_o;s)-k_g\left[C_b-y_1(r_o;s)\right]$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
 </div>
 <div class="solution-step">
-<h4>۴) فرمول سکانت</h4>
+<h4>۴) انتگرال‌گیری هر پرتاب با روش RK4</h4>
+<p>
+برای هر حدس <span dir="ltr">s = C(rᵢ)</span>، شرایط اولیه
+<span dir="ltr">Y₀ = [s, 0]ᵀ</span> هستند. تابع برداری دستگاه به صورت زیر است:
+</p>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(r,\mathbf{Y})=\begin{bmatrix}y_2\\\dfrac{k_r}{D_e}y_1-\dfrac{y_2}{r}\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(r,\mathbf{Y})=\begin{bmatrix}y_2\\\dfrac{k_r}{D_e}y_1-\dfrac{y_2}{r}\end{bmatrix}$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_1=\mathbf{f}(r_n,\mathbf{Y}_n)$$">$$\mathbf{K}_1=\mathbf{f}(r_n,\mathbf{Y}_n)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_2=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_1\right)$$">$$\mathbf{K}_2=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_1\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_3=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_2\right)$$">$$\mathbf{K}_3=\mathbf{f}\left(r_n+\frac{h_r}{2},\mathbf{Y}_n+\frac{h_r}{2}\mathbf{K}_2\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_4=\mathbf{f}\left(r_n+h_r,\mathbf{Y}_n+h_r\mathbf{K}_3\right)$$">$$\mathbf{K}_4=\mathbf{f}\left(r_n+h_r,\mathbf{Y}_n+h_r\mathbf{K}_3\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_r}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_r}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$</div>
+<p>در <span dir="ltr">r = rₒ</span>، باقیمانده شرط فیلم محاسبه و به الگوریتم سکانت داده می‌شود.</p>
+</div>
+<div class="solution-step">
+<h4>۵) فرمول سکانت</h4>
 <div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
 </div>
 </div>
@@ -1534,7 +1576,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 <strong>وظیفه کدنویسی:</strong>
 دستگاه غیرخودمختار را تا <span dir="ltr">t = 20 min</span> با
 <span dir="ltr">h = 0.02 min</span> حل کنید و نمودار غلظت‌های A و B را رسم کنید.
-همچنین زمان کمینه شدن B را گزارش دهید.
+همچنین کمینه غلظت B و زمان وقوع آن را گزارش دهید و با بررسی <span dir="ltr">diff(C_B)</span> مشخص کنید که آیا روند غلظت B در کل بازه یکنواخت کاهشی است یا خیر.
 </p>
 </div>
 <div class="fixed-constants no-select">
@@ -1557,7 +1599,20 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 <p>در محاسبه k₂ و k₃ باید حجم در زمان <span dir="ltr">tₙ+h/2</span> و در k₄ حجم در زمان <span dir="ltr">tₙ+h</span> محاسبه شود.</p>
 </div>
 <div class="solution-step">
-<h4>۴) رابطه مورد استفاده در کدنویسی RK4</h4>
+<h4>۴) تفسیر کمینه غلظت B</h4>
+<p>
+برای غلظت‌های فیزیکی نامنفی داریم
+<span dir="ltr">C_A ≥ 0</span> و <span dir="ltr">C_B ≥ 0</span>؛ بنابراین:
+</p>
+<div class="equation" data-tex="$$\frac{dC_B}{dt}=-C_B\left(kC_A+\frac{F}{V_0+Ft}\right)\le 0$$">$$\frac{dC_B}{dt}=-C_B\left(kC_A+\frac{F}{V_0+Ft}\right)\le 0$$</div>
+<p>
+پس <span dir="ltr">C_B</span> به‌طور یکنواخت کاهش می‌یابد و کمینه آن در انتهای بازه، یعنی
+<span dir="ltr">t = 20 min</span> رخ می‌دهد. با این حال، کد باید این نتیجه را با
+<span dir="ltr">all(diff(C_B) &lt;= tolerance)</span> نیز کنترل کند.
+</p>
+</div>
+<div class="solution-step">
+<h4>۵) رابطه مورد استفاده در کدنویسی RK4</h4>
 <div class="equation" data-tex="$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{k}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div><div class="equation" data-tex="$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$">$$\mathbf{k}_2=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_1\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$">$$\mathbf{k}_3=\mathbf{f}\left(x_n+\frac{h}{2},\mathbf{Y}_n+\frac{h}{2}\mathbf{k}_2\right)$$</div><div class="equation" data-tex="$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$">$$\mathbf{k}_4=\mathbf{f}\left(x_n+h,\mathbf{Y}_n+h\mathbf{k}_3\right)$$</div><div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h}{6}\left(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\right)$$</div>
 </div>
 </div>
@@ -1575,8 +1630,8 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 <strong>وظیفه کدنویسی:</strong>
 این مسئله غیرخطی را با روش پرتابی، RK4 و سکانت حل کنید.
 از <span dir="ltr">hₓ = 0.01</span>، حدس‌های
-<span dir="ltr">s₀ = −0.1</span> و <span dir="ltr">s₁ = −2.0</span>
-و معیار <span dir="ltr">|F| &lt; 10⁻⁸</span> استفاده کنید.
+<span dir="ltr">s₀ = −0.1</span> و <span dir="ltr">s₁ = 0.5</span>
+و معیار <span dir="ltr">|F| &lt; 10⁻⁸</span> استفاده کنید. در تمام مسیر عددی باید شرط <span dir="ltr">1 + αθ &gt; 0</span> برقرار بماند.
 </p>
 </div>
 <div class="fixed-constants no-select">
@@ -1599,7 +1654,30 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 <div class="equation" data-tex="$$s=\theta'(0)$$">$$s=\theta'(0)$$</div><div class="equation" data-tex="$$y_1(0)=1,\qquad y_2(0)=s$$">$$y_1(0)=1,\qquad y_2(0)=s$$</div><div class="equation" data-tex="$$F(s)=-\left[1+\alpha y_1(1;s)\right]y_2(1;s)-Bi\,y_1(1;s)$$">$$F(s)=-\left[1+\alpha y_1(1;s)\right]y_2(1;s)-Bi\,y_1(1;s)$$</div><div class="equation" data-tex="$$F(s^\ast)=0$$">$$F(s^\ast)=0$$</div>
 </div>
 <div class="solution-step">
-<h4>۴) اصلاح شیب با سکانت</h4>
+<h4>۴) انتگرال‌گیری هر پرتاب با روش RK4</h4>
+<p>
+برای هر حدس معتبر شیب <span dir="ltr">s</span>، شرایط اولیه
+<span dir="ltr">Y₀ = [1, s]ᵀ</span> هستند و باید در تمام گام‌ها شرط
+<span dir="ltr">1 + αy₁ &gt; 0</span> کنترل شود. تابع برداری دستگاه برابر است با:
+</p>
+<div class="equation" data-tex="$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(x,\mathbf{Y})=\begin{bmatrix}y_2\\-\dfrac{\alpha y_2^2+Q}{1+\alpha y_1}\end{bmatrix}$$">$$\mathbf{Y}=\begin{bmatrix}y_1\\y_2\end{bmatrix},\qquad \mathbf{f}(x,\mathbf{Y})=\begin{bmatrix}y_2\\-\dfrac{\alpha y_2^2+Q}{1+\alpha y_1}\end{bmatrix}$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$">$$\mathbf{K}_1=\mathbf{f}(x_n,\mathbf{Y}_n)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_2=\mathbf{f}\left(x_n+\frac{h_x}{2},\mathbf{Y}_n+\frac{h_x}{2}\mathbf{K}_1\right)$$">$$\mathbf{K}_2=\mathbf{f}\left(x_n+\frac{h_x}{2},\mathbf{Y}_n+\frac{h_x}{2}\mathbf{K}_1\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_3=\mathbf{f}\left(x_n+\frac{h_x}{2},\mathbf{Y}_n+\frac{h_x}{2}\mathbf{K}_2\right)$$">$$\mathbf{K}_3=\mathbf{f}\left(x_n+\frac{h_x}{2},\mathbf{Y}_n+\frac{h_x}{2}\mathbf{K}_2\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{K}_4=\mathbf{f}\left(x_n+h_x,\mathbf{Y}_n+h_x\mathbf{K}_3\right)$$">$$\mathbf{K}_4=\mathbf{f}\left(x_n+h_x,\mathbf{Y}_n+h_x\mathbf{K}_3\right)$$</div>
+<div class="equation" data-tex="$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_x}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$">$$\mathbf{Y}_{n+1}=\mathbf{Y}_n+\frac{h_x}{6}\left(\mathbf{K}_1+2\mathbf{K}_2+2\mathbf{K}_3+\mathbf{K}_4\right)$$</div>
+<p>اگر در یک مرحله مخرج <span dir="ltr">1+αy₁</span> صفر یا منفی شود، آن حدس نامعتبر است و نباید وارد فرمول سکانت شود.</p>
+</div>
+<div class="solution-step">
+<h4>۵) اعتبار حدس‌های اولیه</h4>
+<p>
+حدس قبلی <span dir="ltr">s₁ = −2.0</span> پیش از رسیدن به <span dir="ltr">x=1</span>
+باعث صفرشدن عبارت <span dir="ltr">1+αθ</span> و تکین‌شدن دستگاه می‌شد؛ بنابراین حدس معتبر
+<span dir="ltr">s₁ = 0.5</span> جایگزین شده است.
+</p>
+</div>
+<div class="solution-step">
+<h4>۶) اصلاح شیب با سکانت</h4>
 <div class="equation" data-tex="$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$">$$s_{j+1}=s_j-F(s_j)\frac{s_j-s_{j-1}}{F(s_j)-F(s_{j-1})}$$</div>
 </div>
 </div>
@@ -1612,7 +1690,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
      * تنظیمات قابل ویرایش توسط استاد
      */
     const CONFIG = {
-      STORAGE_KEY: "matlabExamAll7SeriesFaV2",
+      STORAGE_KEY: "matlabExamAll7SeriesFaV3Verified",
       DURATION_MS: 2 * 60 * 60 * 1000,
       REQUIRE_OFFLINE: false,
       REQUIRE_FULLSCREEN: true,
