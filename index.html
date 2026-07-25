@@ -1083,7 +1083,7 @@
 یکی از روش‌های Gaussian elimination، Gauss–Jordan یا Gauss–Seidel
 که توسط دانشجو کدنویسی شده انجام شود.
 </li><li>در طول آزمون پاسخ‌ها به‌صورت خودکار در همین مرورگر ذخیره می‌شوند.</li>
-<li>برای شروع آزمون، اتصال اینترنت لازم است، شماره دانشجویی باید قبلاً در Google Form ثبت شده باشد و هر شماره دانشجویی فقط یک تلاش سراسری خواهد داشت.</li>
+<li>برای شروع آزمون، اتصال اینترنت لازم است و شماره دانشجویی باید قبلاً در فهرست Google Form ثبت شده باشد.</li>
 <li>آزمون هنگام شروع وارد حالت تمام‌صفحه می‌شود. تغییر تب و خروج از تمام‌صفحه فقط در گزارش آزمون ثبت می‌شود و باعث قفل خودکار نخواهد شد.</li>
 <li>تنها پاسخ قابل ارزیابی، کد MATLAB نوشته‌شده در دو ویرایشگر است. بخش پاسخ دست‌نویس صرفاً راهنمای کامل حل ریاضی است.</li>
 <li>استفاده از هوش مصنوعی، موتور جست‌وجو، پیام‌رسان، کپی‌کردن کد یا دریافت کمک از دیگران مجاز نیست.</li>
@@ -1883,7 +1883,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
      * تنظیمات قابل ویرایش توسط استاد
      */
     const CONFIG = {
-      STORAGE_KEY: "matlabExamAll7SeriesFaV6ServerClaimedAttempt",
+      STORAGE_KEY: "matlabExamAll7SeriesFaV5StaticStudentVerifiedFixed",
       DURATION_MS: 2 * 60 * 60 * 1000,
       REQUIRE_OFFLINE: false,
       REQUIRE_FULLSCREEN: true,
@@ -1892,18 +1892,13 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       EXAM_CLOSE_MINUTE: 24 * 60,
       RETAKE_PASSWORD: "retakematlabexam",
 
-      // فهرست مجاز دانشجویان در Google Sheet؛ کنترل یک‌بار ورود توسط Apps Script انجام می‌شود
+      // فهرست مجاز دانشجویان ـ فقط خواندنی و مناسب میزبانی کاملاً Static
       REGISTRATION_SHEET_ID: "1NF4IVWn4K52n9nq4pR8yqTERfPLok9VfkuxtOpzX8js",
       REGISTRATION_SHEET_GID: "0",
       REGISTRATION_SHEET_NAME: "Form Responses 1",
       REGISTRATION_STUDENT_ID_COLUMN: "D",
       REGISTRATION_FORM_URL: "https://docs.google.com/forms/d/e/1FAIpQLSfVSbX9o5U0X_rOhcdikuOTbDJSLZwZbwSXK76x6pgfN3CMMg/viewform?usp=sharing",
       REGISTRATION_TIMEOUT_MS: 15000,
-
-      // نشانی Web App پس از Deploy کردن فایل Code.gs را اینجا قرار دهید.
-      // نمونه: https://script.google.com/macros/s/AKfycb.../exec
-      ATTEMPT_API_URL: "https://script.google.com/macros/s/AKfycbzFpjYXVFp2FfmPyUQN6LMES6W-o4K2_-fd8aUfBuryZ82U76UnEuSKWdwyEb4UFWpDhA/exec",
-      ATTEMPT_API_TIMEOUT_MS: 15000,
     };
 
     const SERIES_META = [
@@ -1945,8 +1940,6 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         finishedAt:null,
         lastSeenAt:null,
         attemptCode:"",
-        attemptToken:"",
-        serverClaimed:false,
         seriesIndex:null,
         seriesLabel:"",
         seriesSlot:"",
@@ -2496,22 +2489,37 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       }
     }
 
-    function isAttemptApiConfigured(){
-      const url = String(CONFIG.ATTEMPT_API_URL || "").trim();
-      return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?|$)/i.test(url);
+    function parseStudentIdsFromGvizResponse(response){
+      if(!response || response.status!=="ok" || !response.table){
+        const message = response?.errors?.[0]?.detailed_message ||
+          response?.errors?.[0]?.message ||
+          "پاسخ Google Sheet معتبر نیست.";
+        throw new Error(message);
+      }
+
+      const ids = new Set();
+      const rows = Array.isArray(response.table.rows)
+        ? response.table.rows
+        : [];
+
+      rows.forEach(row=>{
+        const cell = row?.c?.[0];
+        if(!cell) return;
+
+        [cell.v,cell.f].forEach(value=>{
+          const id = comparableStudentId(value);
+          if(id) ids.add(id);
+        });
+      });
+
+      return ids;
     }
 
-    function callAttemptApi(action,parameters={}){
+    function queryStudentIdsByJsonp(extraParams={}){
       return new Promise((resolve,reject)=>{
-        if(!isAttemptApiConfigured()){
-          reject(new Error(
-            "نشانی Google Apps Script Web App در CONFIG.ATTEMPT_API_URL تنظیم نشده است."
-          ));
-          return;
-        }
-
+        // Google نمونه رسمی responseHandler را با نام ساده پیشنهاد می‌کند.
         const callbackName =
-          `matlabExamAttemptCallback${Date.now()}${Math.random().toString(36).slice(2).replace(/[^a-z0-9]/gi,"")}`;
+          `matlabExamSheetCallback${Date.now()}${Math.random().toString(36).slice(2).replace(/[^a-z0-9]/gi,"")}`;
         const script = document.createElement("script");
         let settled = false;
         let timeoutHandle = null;
@@ -2523,87 +2531,190 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
           catch(_error){ window[callbackName]=undefined; }
         };
 
-        const finish = (callback,value)=>{
+        const succeed = value=>{
           if(settled) return;
           settled = true;
           cleanup();
-          callback(value);
+          resolve(value);
+        };
+
+        const fail = error=>{
+          if(settled) return;
+          settled = true;
+          cleanup();
+          reject(error instanceof Error ? error : new Error(String(error)));
         };
 
         window[callbackName] = response=>{
-          if(!response || typeof response!=="object"){
-            finish(reject,new Error("پاسخ سرویس تلاش آزمون معتبر نیست."));
-            return;
+          try{
+            succeed(parseStudentIdsFromGvizResponse(response));
+          }catch(error){
+            fail(error);
           }
-          finish(resolve,response);
         };
 
         script.async = true;
-        script.onerror = ()=>finish(
-          reject,
-          new Error("ارتباط با Google Apps Script برقرار نشد یا Web App عمومی نیست.")
-        );
+        script.onerror = ()=>fail(new Error("بارگذاری پاسخ Google Sheet ناموفق بود."));
 
+        const column = CONFIG.REGISTRATION_STUDENT_ID_COLUMN;
+        const baseUrl =
+          `https://docs.google.com/spreadsheets/d/${CONFIG.REGISTRATION_SHEET_ID}/gviz/tq`;
         const params = new URLSearchParams({
-          action:String(action),
-          callback:callbackName,
-          cacheBust:String(Date.now()),
-          ...Object.fromEntries(
-            Object.entries(parameters)
-              .filter(([,value])=>value!==undefined && value!==null)
-              .map(([key,value])=>[key,String(value)])
-          )
+          headers:"1",
+          tq:`select ${column} where ${column} is not null`,
+          // مطابق نمونه رسمی Google؛ افزودن out:json ضروری نیست.
+          tqx:`responseHandler:${callbackName}`,
+          ...extraParams,
+          cacheBust:String(Date.now())
         });
 
-        const separator = CONFIG.ATTEMPT_API_URL.includes("?") ? "&" : "?";
-        script.src = `${CONFIG.ATTEMPT_API_URL}${separator}${params.toString()}`;
-
+        script.src = `${baseUrl}?${params.toString()}`;
         timeoutHandle = setTimeout(()=>{
-          finish(reject,new Error("زمان ارتباط با سرویس تلاش آزمون به پایان رسید."));
-        },CONFIG.ATTEMPT_API_TIMEOUT_MS);
+          fail(new Error("زمان دریافت فهرست دانشجویان به پایان رسید."));
+        },CONFIG.REGISTRATION_TIMEOUT_MS);
 
         document.head.appendChild(script);
       });
     }
 
-    async function claimStudentAttempt(studentId,fullName){
-      return callAttemptApi("claim",{
-        studentId:normalizeStudentId(studentId),
-        fullName:String(fullName || "").trim()
+    let googleChartsReadyPromise = null;
+
+    function ensureGoogleChartsQueryReady(){
+      if(window.google?.visualization?.Query){
+        return Promise.resolve();
+      }
+
+      if(googleChartsReadyPromise){
+        return googleChartsReadyPromise;
+      }
+
+      googleChartsReadyPromise = new Promise((resolve,reject)=>{
+        const beginLoad = ()=>{
+          try{
+            if(!window.google?.charts){
+              reject(new Error("Google Charts Loader در دسترس نیست."));
+              return;
+            }
+
+            window.google.charts.load("current",{packages:["table"]});
+            window.google.charts.setOnLoadCallback(()=>{
+              if(window.google?.visualization?.Query){
+                resolve();
+              }else{
+                reject(new Error("Google Visualization Query بارگذاری نشد."));
+              }
+            });
+          }catch(error){
+            reject(error);
+          }
+        };
+
+        if(window.google?.charts){
+          beginLoad();
+          return;
+        }
+
+        const loader = document.createElement("script");
+        loader.src = "https://www.gstatic.com/charts/loader.js";
+        loader.async = true;
+        loader.onload = beginLoad;
+        loader.onerror = ()=>reject(new Error("Google Charts Loader دریافت نشد."));
+        document.head.appendChild(loader);
+      });
+
+      return googleChartsReadyPromise;
+    }
+
+    async function queryStudentIdsWithGoogleCharts(extraParams={}){
+      await ensureGoogleChartsQueryReady();
+
+      return new Promise((resolve,reject)=>{
+        let settled = false;
+        const finish = (callback,value)=>{
+          if(settled) return;
+          settled = true;
+          clearTimeout(timeoutHandle);
+          callback(value);
+        };
+
+        const baseUrl =
+          `https://docs.google.com/spreadsheets/d/${CONFIG.REGISTRATION_SHEET_ID}/gviz/tq`;
+        const params = new URLSearchParams({headers:"1",...extraParams});
+        const queryUrl = `${baseUrl}?${params.toString()}`;
+        const query = new window.google.visualization.Query(queryUrl);
+        const column = CONFIG.REGISTRATION_STUDENT_ID_COLUMN;
+        query.setQuery(`select ${column} where ${column} is not null`);
+
+        const timeoutHandle = setTimeout(()=>{
+          finish(reject,new Error("زمان دریافت فهرست دانشجویان به پایان رسید."));
+        },CONFIG.REGISTRATION_TIMEOUT_MS);
+
+        query.send(response=>{
+          try{
+            if(response.isError()){
+              const details = [response.getMessage?.(),response.getDetailedMessage?.()]
+                .filter(Boolean).join(" ـ ");
+              finish(reject,new Error(details || "Google Sheet خطای Query برگرداند."));
+              return;
+            }
+
+            const table = response.getDataTable();
+            const ids = new Set();
+            for(let row=0;row<table.getNumberOfRows();row++){
+              [table.getValue(row,0),table.getFormattedValue(row,0)].forEach(value=>{
+                const id = comparableStudentId(value);
+                if(id) ids.add(id);
+              });
+            }
+            finish(resolve,ids);
+          }catch(error){
+            finish(reject,error);
+          }
+        });
       });
     }
 
-    function claimFailureMessage(result){
-      switch(result?.code){
-        case "NOT_REGISTERED":
-          return "این شماره دانشجویی در فهرست پاسخ‌های Google Form ثبت نشده است.";
-        case "ALREADY_CLAIMED":
-          return "برای این شماره دانشجویی قبلاً یک تلاش آزمون ثبت شده است و شروع روی سیستم دیگر مجاز نیست.";
-        case "EXAM_CLOSED":
-          return "طبق ساعت رسمی سرور، بازه شروع آزمون بسته است.";
-        case "INVALID_STUDENT_ID":
-          return "شماره دانشجویی واردشده معتبر نیست.";
-        case "SERVER_BUSY":
-          return "سرویس ثبت تلاش موقتاً درگیر است؛ چند ثانیه بعد دوباره تلاش کنید.";
-        case "CONFIG_ERROR":
-          return "تنظیمات Google Apps Script کامل نیست. موضوع را به استاد اطلاع دهید.";
-        default:
-          return result?.message || "سرویس ثبت تلاش اجازه شروع آزمون را صادر نکرد.";
+    async function loadRegisteredStudentIds(){
+      const selectors = [
+        {gid:String(CONFIG.REGISTRATION_SHEET_GID)},
+        {sheet:String(CONFIG.REGISTRATION_SHEET_NAME)},
+        {}
+      ];
+      const errors = [];
+
+      // روش اول: JSONP مستقیم؛ مناسب‌ترین روش برای سایت Static و بدون CORS.
+      for(const selector of selectors){
+        try{
+          const ids = await queryStudentIdsByJsonp(selector);
+          if(ids.size) return ids;
+          errors.push(new Error("پاسخ دریافت شد اما هیچ شماره دانشجویی در ستون D نبود."));
+        }catch(error){
+          errors.push(error);
+        }
       }
+
+      // روش دوم: API رسمی Google Visualization Query به‌عنوان fallback.
+      for(const selector of selectors){
+        try{
+          const ids = await queryStudentIdsWithGoogleCharts(selector);
+          if(ids.size) return ids;
+          errors.push(new Error("پاسخ دریافت شد اما هیچ شماره دانشجویی در ستون D نبود."));
+        }catch(error){
+          errors.push(error);
+        }
+      }
+
+      console.error("All Google Sheet registration checks failed:",errors);
+      const summary = errors.map(error=>error?.message).filter(Boolean).slice(-3).join(" | ");
+      throw new Error(summary || "فهرست ثبت‌نام Google Sheet قابل دریافت نیست.");
     }
 
-    async function markServerAttemptStatus(status){
-      if(!state.serverClaimed || !state.attemptToken || !state.studentId) return;
-      try{
-        await callAttemptApi("finish",{
-          studentId:state.studentId,
-          attemptToken:state.attemptToken,
-          status
-        });
-      }catch(error){
-        // ثبت محلی و چاپ پاسخ نباید به‌علت اختلال موقت سرویس متوقف شود.
-        console.error("Server attempt status update failed:",error);
-      }
+    async function verifyStudentRegistration(studentId){
+      const requestedId = comparableStudentId(studentId);
+      if(!requestedId) return false;
+
+      const registeredIds = await loadRegisteredStudentIds();
+      return registeredIds.has(requestedId);
     }
 
     async function exitFullscreenAfterRejectedRegistration(){
@@ -2620,7 +2731,6 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 
       const fullName = $("#fullName").value.trim();
       const studentId = $("#studentId").value.trim();
-      const normalizedStudentId = normalizeStudentId(studentId);
       const pledge = $("#pledge").checked;
 
       if(!fullName||!studentId){
@@ -2628,7 +2738,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         return;
       }
 
-      if(!normalizedStudentId){
+      if(!normalizeStudentId(studentId)){
         alert("شماره دانشجویی واردشده معتبر نیست.");
         return;
       }
@@ -2638,16 +2748,20 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         return;
       }
 
-      if(!state.startedAt && !isAttemptApiConfigured()){
-        setRegistrationStatus(
-          "error",
-          "نشانی Google Apps Script در فایل HTML تنظیم نشده است. آزمون قابل شروع نیست."
-        );
-        alert(
-          "تنظیم سرویس یک‌بار ورود کامل نشده است.\n\n" +
-          "نشانی Web App باید در CONFIG.ATTEMPT_API_URL قرار گیرد."
-        );
-        return;
+      let assignedIndex = null;
+
+      if(!state.startedAt){
+        if(!isExamWindowOpen()){
+          updateAvailability();
+          alert("شروع آزمون فقط از ساعت ۰۹:۰۰ تا ۲۴:۰۰ تهران امکان‌پذیر است.");
+          return;
+        }
+
+        assignedIndex=getSeriesIndex();
+        if(assignedIndex===null){
+          alert("مجموعه سؤال قابل تعیین نیست.");
+          return;
+        }
       }
 
       const fullscreenOkay = await requestExamFullscreen();
@@ -2660,32 +2774,38 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         setStartButtonBusy(true);
         setRegistrationStatus(
           "checking",
-          "در حال بررسی ثبت‌نام و رزرو تنها تلاش مجاز این شماره دانشجویی..."
+          "در حال بررسی شماره دانشجویی در فهرست ثبت‌نام Google Form..."
         );
 
-        let claimResult;
+        let registered = false;
+
         try{
-          claimResult = await claimStudentAttempt(normalizedStudentId,fullName);
+          registered = await verifyStudentRegistration(studentId);
         }catch(error){
           console.error(error);
           setRegistrationStatus(
             "error",
-            "ارتباط با سرویس ثبت تلاش برقرار نشد. اتصال اینترنت و Deploy بودن Web App را بررسی کنید."
+            "فهرست ثبت‌نام قابل دریافت نیست. اتصال اینترنت و عمومی‌بودن Google Sheet را بررسی کنید."
           );
           await exitFullscreenAfterRejectedRegistration();
           alert(
-            "امکان ثبت تلاش آزمون وجود ندارد؛ آزمون شروع نشد.\n\n" +
+            "امکان بررسی شماره دانشجویی وجود ندارد؛ آزمون شروع نشد.\n\n" +
             "اتصال اینترنت را بررسی کرده و دوباره تلاش کنید."
           );
           setStartButtonBusy(false);
           return;
         }
 
-        if(!claimResult.ok){
-          const message = claimFailureMessage(claimResult);
-          setRegistrationStatus("error",message);
+        if(!registered){
+          setRegistrationStatus(
+            "error",
+            "این شماره دانشجویی در فهرست ثبت‌نام Google Form پیدا نشد."
+          );
           await exitFullscreenAfterRejectedRegistration();
-          alert(message);
+          alert(
+            "شماره دانشجویی در فهرست ثبت‌نام پیدا نشد.\n\n" +
+            "ابتدا Google Form را با شماره دانشجویی صحیح تکمیل کنید."
+          );
           setStartButtonBusy(false);
           return;
         }
@@ -2693,42 +2813,28 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         if(CONFIG.REQUIRE_FULLSCREEN && !document.fullscreenElement){
           setRegistrationStatus(
             "error",
-            "حالت تمام‌صفحه هنگام ثبت تلاش بسته شد. این تلاش روی سرور ثبت شده است؛ صفحه را Refresh نکنید و موضوع را به استاد اطلاع دهید."
+            "حالت تمام‌صفحه هنگام بررسی شماره دانشجویی بسته شد. دوباره دکمه شروع را بزنید."
           );
-          alert(
-            "تلاش آزمون ثبت شد، اما حالت تمام‌صفحه بسته شده است.\n\n" +
-            "برای جلوگیری از ایجاد مشکل، صفحه را نبندید و با استاد هماهنگ کنید."
-          );
-          setStartButtonBusy(false);
-          return;
-        }
-
-        const serverSeriesIndex = Number(claimResult.seriesIndex);
-        if(!Number.isInteger(serverSeriesIndex) || !SERIES_META[serverSeriesIndex]){
-          setRegistrationStatus("error","سری آزمون از سرور به‌درستی دریافت نشد.");
-          await exitFullscreenAfterRejectedRegistration();
-          alert("پاسخ سرویس ناقص است؛ موضوع را به استاد اطلاع دهید.");
+          alert("برای شروع آزمون باید تا پایان بررسی در حالت تمام‌صفحه بمانید.");
           setStartButtonBusy(false);
           return;
         }
 
         setRegistrationStatus(
           "success",
-          "ثبت‌نام تأیید و تنها تلاش مجاز با موفقیت رزرو شد. آزمون در حال شروع است."
+          "شماره دانشجویی در فهرست ثبت‌نام تأیید شد. آزمون در حال شروع است."
         );
 
         state.fullName=fullName;
-        state.studentId=normalizedStudentId;
+        state.studentId=normalizeStudentId(studentId);
         state.pledge=true;
-        state.seriesIndex=serverSeriesIndex;
-        state.seriesLabel=SERIES_META[serverSeriesIndex].label;
-        state.seriesSlot=SERIES_META[serverSeriesIndex].slot;
-        state.startedAt=Number(claimResult.startedAtMs) || Date.now();
-        state.deadline=Number(claimResult.deadlineMs) || (state.startedAt+CONFIG.DURATION_MS);
-        state.lastSeenAt=Date.now();
-        state.attemptCode=String(claimResult.attemptCode || makeAttemptCode());
-        state.attemptToken=String(claimResult.attemptToken || "");
-        state.serverClaimed=true;
+        state.seriesIndex=assignedIndex;
+        state.seriesLabel=SERIES_META[assignedIndex].label;
+        state.seriesSlot=SERIES_META[assignedIndex].slot;
+        state.startedAt=Date.now();
+        state.deadline=state.startedAt+CONFIG.DURATION_MS;
+        state.lastSeenAt=state.startedAt;
+        state.attemptCode=makeAttemptCode();
         state.status="active";
         saveState();
         setStartButtonBusy(false);
@@ -2756,7 +2862,6 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
         saveState();
       }
 
-      await markServerAttemptStatus("expired");
       setEditingLocked(true);
       $("#lockedTitle").textContent="زمان آزمون پایان یافت";
       $("#lockedMessage").textContent=
@@ -2777,7 +2882,6 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
       state.finishedAt=Date.now();
       state.lastSeenAt=Date.now();
       saveState();
-      await markServerAttemptStatus("finished");
       clearInterval(timerHandle);
       clearInterval(saveClockHandle);
       setEditingLocked(true);
@@ -3338,7 +3442,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 
 
     async function retryExam(){
-      const password = window.prompt("شروع مجدد فقط پس از Reset کردن تلاش در Google Apps Script ممکن است. سپس رمز محلی را وارد کنید:");
+      const password = window.prompt("رمز شروع مجدد آزمون را وارد کنید:");
 
       if(password===null){
         return;
@@ -3355,7 +3459,7 @@ Gauss–Seidel</strong> که خودتان می‌نویسید حل کنید.
 
       const confirmed = window.confirm(
         "رمز صحیح است.\\n\\n" +
-        "وضعیت محلی آزمون پاک شود؟ توجه: تلاش سروری نیز باید قبلاً توسط استاد Reset شده باشد."
+        "آزمون قبلی پاک و یک تلاش جدید ایجاد شود؟"
       );
 
       if(!confirmed){
